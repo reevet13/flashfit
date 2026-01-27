@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlashFit - Affordable Fitness Programs & Workout Tracking</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Anton&family=Work+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --flash-yellow: #FFD700;
+            --flash-orange: #FF6B35;
+            --electric-blue: #0066FF;
+            --deep-purple: #1A0B2E;
+            --pure-black: #000000;
+            --off-white: #F5F5F5;
+            --energy-gradient: linear-gradient(135deg, var(--flash-orange) 0%, var(--electric-blue) 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Work Sans', sans-serif;
+            background: var(--deep-purple);
+            color: var(--off-white);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Animated background */
+        .bg-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 107, 53, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 102, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(255, 215, 0, 0.05) 0%, transparent 50%);
+            z-index: 0;
+            animation: pulse 15s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.8rem;
+            background: var(--energy-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            padding: 0.6rem 1.5rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            border: 2px solid var(--flash-orange);
+            background: transparent;
+            color: var(--off-white);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: var(--flash-orange);
+            transform: translateY(-2px);
+        }
+
+        .nav-btn.primary {
+            background: var(--energy-gradient);
+            border: none;
+        }
+
+        #userInfo {
+            display: none;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        #userName {
+            color: var(--flash-yellow);
+            font-weight: 600;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            padding-top: 5rem;
+            overflow: hidden;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: slideDown 1s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 1rem;
+            position: relative;
+        }
+
+        .logo-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--energy-gradient);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transform: rotate(-5deg);
+            box-shadow: 0 10px 40px rgba(255, 107, 53, 0.5);
+            animation: logoFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes logoFloat {
+            0%, 100% { transform: rotate(-5deg) translateY(0px); }
+            50% { transform: rotate(-5deg) translateY(-10px); }
+        }
+
+        .lightning {
+            font-size: 3rem;
+            filter: drop-shadow(0 0 10px var(--flash-yellow));
+        }
+
+        .logo-text {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 5rem;
+            letter-spacing: 0.1em;
+            background: var(--energy-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 40px rgba(255, 107, 53, 0.5);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 20px rgba(255, 107, 53, 0.5)); }
+            to { filter: drop-shadow(0 0 40px rgba(0, 102, 255, 0.8)); }
+        }
+
+        .hero-content {
+            text-align: center;
+            max-width: 900px;
+            z-index: 1;
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tagline {
+            font-family: 'Anton', sans-serif;
+            font-size: 3.5rem;
+            line-height: 1.2;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        .tagline-highlight {
+            color: var(--flash-yellow);
+            position: relative;
+            display: inline-block;
+        }
+
+        .tagline-highlight::after {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            left: 0;
+            width: 100%;
+            height: 15px;
+            background: var(--flash-orange);
+            opacity: 0.3;
+            z-index: -1;
+            transform: skewY(-2deg);
+        }
+
+        .description {
+            font-size: 1.3rem;
+            margin-bottom: 3rem;
+            font-weight: 300;
+            line-height: 1.8;
+            color: rgba(245, 245, 245, 0.9);
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1.2rem 3rem;
+            font-size: 1.2rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            background: var(--energy-gradient);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.4);
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 1s ease-out 0.6s both;
+            cursor: pointer;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .cta-button:hover::before {
+            left: 100%;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(255, 107, 53, 0.6);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--deep-purple);
+            border: 2px solid var(--flash-orange);
+            border-radius: 20px;
+            padding: 3rem;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: var(--off-white);
+            font-size: 2rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: var(--flash-orange);
+        }
+
+        .modal-title {
+            font-family: 'Anton', sans-serif;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            color: var(--flash-yellow);
+        }
+
+        .auth-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 1rem;
+            background: transparent;
+            border: 2px solid var(--flash-orange);
+            color: var(--off-white);
+            font-weight: 600;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .auth-tab.active {
+            background: var(--energy-gradient);
+            border-color: transparent;
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        /* Features Section */
+        .features {
+            position: relative;
+            padding: 8rem 2rem;
+            background: linear-gradient(180deg, var(--deep-purple) 0%, #0A0015 100%);
+        }
+
+        .section-title {
+            font-family: 'Anton', sans-serif;
+            font-size: 3.5rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            margin-bottom: 5rem;
+            color: rgba(245, 245, 245, 0.7);
+            font-weight: 300;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 3rem 2rem;
+            border-radius: 20px;
+            border: 2px solid rgba(255, 107, 53, 0.2);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--energy-gradient);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--flash-orange);
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 20px 60px rgba(255, 107, 53, 0.3);
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .feature-card:nth-child(1) .feature-icon { animation-delay: 0s; }
+        .feature-card:nth-child(2) .feature-icon { animation-delay: 0.2s; }
+        .feature-card:nth-child(3) .feature-icon { animation-delay: 0.4s; }
+
+        .feature-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            letter-spacing: 0.05em;
+            color: var(--flash-yellow);
+        }
+
+        .feature-description {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: rgba(245, 245, 245, 0.8);
+        }
+
+        /* Survey Section */
+        .survey-section {
+            position: relative;
+            padding: 8rem 2rem;
+            background: var(--pure-black);
+            text-align: center;
+        }
+
+        .survey-box {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 4rem 3rem;
+            background: var(--energy-gradient);
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(255, 107, 53, 0.5);
+            transform: skewY(-1deg);
+        }
+
+        .survey-box-inner {
+            transform: skewY(1deg);
+        }
+
+        .survey-title {
+            font-family: 'Anton', sans-serif;
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .survey-text {
+            font-size: 1.2rem;
+            margin-bottom: 2.5rem;
+            color: rgba(255, 255, 255, 0.95);
+            line-height: 1.6;
+        }
+
+        .survey-link {
+            display: inline-block;
+            padding: 1.2rem 3rem;
+            font-size: 1.2rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            background: white;
+            color: var(--flash-orange);
+            text-decoration: none;
+            border-radius: 50px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .survey-link:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+            background: var(--flash-yellow);
+        }
+
+        /* Contact Form Section */
+        .contact-section {
+            position: relative;
+            padding: 8rem 2rem;
+            background: linear-gradient(180deg, #0A0015 0%, var(--deep-purple) 100%);
+        }
+
+        .contact-container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .form-group:nth-child(1) { animation-delay: 0.1s; }
+        .form-group:nth-child(2) { animation-delay: 0.2s; }
+        .form-group:nth-child(3) { animation-delay: 0.3s; }
+        .form-group:nth-child(4) { animation-delay: 0.4s; }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--flash-yellow);
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 1.2rem;
+            font-size: 1.1rem;
+            font-family: 'Work Sans', sans-serif;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 107, 53, 0.3);
+            border-radius: 15px;
+            color: var(--off-white);
+            transition: all 0.3s ease;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--flash-orange);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 20px rgba(255, 107, 53, 0.3);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 150px;
+        }
+
+        .submit-button, .btn-primary {
+            width: 100%;
+            padding: 1.5rem;
+            font-size: 1.3rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            background: var(--energy-gradient);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.4);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-button::before, .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .submit-button:hover::before, .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .submit-button:hover, .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255, 107, 53, 0.6);
+        }
+
+        .submit-button:active, .btn-primary:active {
+            transform: translateY(-1px);
+        }
+
+        .submit-button:disabled, .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Alert styles */
+        .alert {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 10px;
+            animation: slideDown 0.3s ease;
+        }
+
+        .alert-success {
+            background: rgba(76, 175, 80, 0.2);
+            border: 2px solid #4CAF50;
+            color: #4CAF50;
+        }
+
+        .alert-error {
+            background: rgba(244, 67, 54, 0.2);
+            border: 2px solid #f44336;
+            color: #f44336;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--pure-black);
+            padding: 3rem 2rem;
+            text-align: center;
+            border-top: 3px solid var(--flash-orange);
+        }
+
+        .footer-text {
+            font-size: 1rem;
+            color: rgba(245, 245, 245, 0.6);
+        }
+
+        .footer-logo {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2rem;
+            background: var(--energy-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .logo-text {
+                font-size: 3rem;
+            }
+
+            .logo-icon {
+                width: 60px;
+                height: 60px;
+            }
+
+            .lightning {
+                font-size: 2rem;
+            }
+
+            .tagline {
+                font-size: 2rem;
+            }
+
+            .description {
+                font-size: 1.1rem;
+            }
+
+            .section-title {
+                font-size: 2.5rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .survey-title {
+                font-size: 2rem;
+            }
+
+            .survey-box {
+                padding: 3rem 2rem;
+            }
+
+            .modal-content {
+                padding: 2rem;
+            }
+        }
+
+        /* Scroll animations */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .animate-on-scroll.animated {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-pattern"></div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-logo">⚡ FLASHFIT</div>
+        <div class="nav-buttons">
+            <div id="authButtons">
+                <button class="nav-btn" onclick="openModal('login')">Login</button>
+                <button class="nav-btn primary" onclick="openModal('register')">Sign Up</button>
+            </div>
+            <div id="userInfo">
+                <span id="userName"></span>
+                <button class="nav-btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <h2 class="modal-title">JOIN FLASHFIT</h2>
+            
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="switchTab('login')">Login</button>
+                <button class="auth-tab" onclick="switchTab('register')">Register</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="auth-form active">
+                <div id="loginAlert"></div>
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn-primary">Login</button>
+            </form>
+
+            <!-- Register Form -->
+            <form id="registerForm" class="auth-form">
+                <div id="registerAlert"></div>
+                <div class="form-group">
+                    <label for="registerName">Full Name</label>
+                    <input type="text" id="registerName" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">Email</label>
+                    <input type="email" id="registerEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Password</label>
+                    <input type="password" id="registerPassword" minlength="6" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPhone">Phone (Optional)</label>
+                    <input type="tel" id="registerPhone">
+                </div>
+                <button type="submit" class="btn-primary">Create Account</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="logo-container">
+            <div class="logo">
+                <div class="logo-icon">
+                    <span class="lightning">⚡</span>
+                </div>
+                <h1 class="logo-text">FLASHFIT</h1>
+            </div>
+        </div>
+
+        <div class="hero-content">
+            <h2 class="tagline">
+                Transform Your Body.<br>
+                <span class="tagline-highlight">Track Your Progress.</span>
+            </h2>
+            <p class="description">
+                A centralized platform to access and buy affordable fitness programs. 
+                Powerful tools to track your workouts and progress seamlessly. 
+                Your fitness journey starts here.
+            </p>
+            <button class="cta-button" onclick="openModal('register')">Get Started Now</button>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <h2 class="section-title animate-on-scroll">What Makes FlashFit Different</h2>
+        <p class="section-subtitle animate-on-scroll">Everything you need to achieve your fitness goals</p>
+        
+        <div class="features-grid">
+            <div class="feature-card animate-on-scroll">
+                <div class="feature-icon">💪</div>
+                <h3 class="feature-title">Affordable Programs</h3>
+                <p class="feature-description">
+                    Access premium fitness programs at prices that won't break the bank. 
+                    From strength training to HIIT, yoga to bodybuilding—find the perfect program for your goals.
+                </p>
+            </div>
+
+            <div class="feature-card animate-on-scroll">
+                <div class="feature-icon">📊</div>
+                <h3 class="feature-title">Progress Tracking</h3>
+                <p class="feature-description">
+                    Track every rep, set, and workout with our intuitive tracking tools. 
+                    Visualize your progress with detailed analytics and stay motivated with milestone achievements.
+                </p>
+            </div>
+
+            <div class="feature-card animate-on-scroll">
+                <div class="feature-icon">🎯</div>
+                <h3 class="feature-title">Centralized Platform</h3>
+                <p class="feature-description">
+                    All your fitness needs in one place. Browse programs, track workouts, monitor nutrition, 
+                    and connect with trainers—all from a single, seamless platform.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Survey Section -->
+    <section class="survey-section">
+        <div class="survey-box">
+            <div class="survey-box-inner">
+                <h2 class="survey-title">Help Shape FlashFit</h2>
+                <p class="survey-text">
+                    Your feedback matters! Take our quick survey and help us build 
+                    the features you actually want. Plus, get early access to new features.
+                </p>
+                <a href="https://forms.gle/your-survey-link" class="survey-link" target="_blank">
+                    Take Our Survey →
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Form Section -->
+    <section class="contact-section" id="contact">
+        <h2 class="section-title animate-on-scroll">Join The Movement</h2>
+        <p class="section-subtitle animate-on-scroll">Be the first to know when FlashFit launches</p>
+        
+        <div class="contact-container">
+            <form id="contactForm">
+                <div id="contactAlert"></div>
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone">
+                </div>
+
+                <div class="form-group">
+                    <label for="message">What Are Your Fitness Goals?</label>
+                    <textarea id="message" name="message"></textarea>
+                </div>
+
+                <button type="submit" class="submit-button">
+                    Sign Me Up!
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-logo">FLASHFIT</div>
+        <p class="footer-text">© 2026 FlashFit. Transform Your Body. Track Your Progress.</p>
+    </footer>
+
+    <script>
+        // API Configuration
+        const API_URL = 'http://localhost:3000/api';
+        
+        // Check if user is logged in on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+        });
+
+        // Authentication functions
+        function checkAuth() {
+            const token = localStorage.getItem('flashfit_token');
+            const user = JSON.parse(localStorage.getItem('flashfit_user') || 'null');
+            
+            if (token && user) {
+                showUserInfo(user);
+            } else {
+                showAuthButtons();
+            }
+        }
+
+        function showUserInfo(user) {
+            document.getElementById('authButtons').style.display = 'none';
+            document.getElementById('userInfo').style.display = 'flex';
+            document.getElementById('userName').textContent = `Welcome, ${user.name}!`;
+        }
+
+        function showAuthButtons() {
+            document.getElementById('authButtons').style.display = 'flex';
+            document.getElementById('userInfo').style.display = 'none';
+        }
+
+        function logout() {
+            localStorage.removeItem('flashfit_token');
+            localStorage.removeItem('flashfit_user');
+            showAuthButtons();
+            showAlert('You have been logged out', 'success');
+        }
+
+        // Modal functions
+        function openModal(tab = 'login') {
+            document.getElementById('authModal').classList.add('active');
+            switchTab(tab);
+        }
+
+        function closeModal() {
+            document.getElementById('authModal').classList.remove('active');
+            clearAlerts();
+        }
+
+        function switchTab(tab) {
+            const tabs = document.querySelectorAll('.auth-tab');
+            const forms = document.querySelectorAll('.auth-form');
+            
+            tabs.forEach(t => t.classList.remove('active'));
+            forms.forEach(f => f.classList.remove('active'));
+            
+            if (tab === 'login') {
+                tabs[0].classList.add('active');
+                document.getElementById('loginForm').classList.add('active');
+            } else {
+                tabs[1].classList.add('active');
+                document.getElementById('registerForm').classList.add('active');
+            }
+            
+            clearAlerts();
+        }
+
+        // Alert functions
+        function showAlert(message, type, elementId = null) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            
+            if (elementId) {
+                const element = document.getElementById(elementId);
+                element.innerHTML = '';
+                element.appendChild(alertDiv);
+            } else {
+                // Show in current active form
+                const activeForm = document.querySelector('.auth-form.active');
+                if (activeForm) {
+                    const alertContainer = activeForm.querySelector('[id$="Alert"]');
+                    if (alertContainer) {
+                        alertContainer.innerHTML = '';
+                        alertContainer.appendChild(alertDiv);
+                    }
+                }
+            }
+            
+            setTimeout(() => alertDiv.remove(), 5000);
+        }
+
+        function clearAlerts() {
+            document.querySelectorAll('.alert').forEach(alert => alert.remove());
+        }
+
+        // Register Form
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Creating Account...';
+            
+            const formData = {
+                name: document.getElementById('registerName').value,
+                email: document.getElementById('registerEmail').value,
+                password: document.getElementById('registerPassword').value,
+                phone: document.getElementById('registerPhone').value
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    localStorage.setItem('flashfit_token', data.token);
+                    localStorage.setItem('flashfit_user', JSON.stringify(data.user));
+                    showAlert('Account created successfully!', 'success', 'registerAlert');
+                    setTimeout(() => {
+                        closeModal();
+                        checkAuth();
+                        e.target.reset();
+                    }, 1500);
+                } else {
+                    showAlert(data.message || 'Registration failed', 'error', 'registerAlert');
+                }
+            } catch (error) {
+                showAlert('Error connecting to server. Please try again.', 'error', 'registerAlert');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Create Account';
+            }
+        });
+
+        // Login Form
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Logging in...';
+            
+            const formData = {
+                email: document.getElementById('loginEmail').value,
+                password: document.getElementById('loginPassword').value
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    localStorage.setItem('flashfit_token', data.token);
+                    localStorage.setItem('flashfit_user', JSON.stringify(data.user));
+                    showAlert('Login successful!', 'success', 'loginAlert');
+                    setTimeout(() => {
+                        closeModal();
+                        checkAuth();
+                        e.target.reset();
+                    }, 1500);
+                } else {
+                    showAlert(data.message || 'Login failed', 'error', 'loginAlert');
+                }
+            } catch (error) {
+                showAlert('Error connecting to server. Please try again.', 'error', 'loginAlert');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Login';
+            }
+        });
+
+        // Contact Form
+        document.getElementById('contactForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+            
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                message: document.getElementById('message').value
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/contact/submit`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showAlert(data.message, 'success', 'contactAlert');
+                    e.target.reset();
+                } else {
+                    showAlert(data.message || 'Submission failed', 'error', 'contactAlert');
+                }
+            } catch (error) {
+                showAlert('Error connecting to server. Please try again.', 'error', 'contactAlert');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Sign Me Up!';
+            }
+        });
+
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animated');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.animate-on-scroll').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('authModal').addEventListener('click', (e) => {
+            if (e.target.id === 'authModal') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
