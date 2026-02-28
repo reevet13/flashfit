@@ -9,13 +9,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Anton&family=Work+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --flash-yellow: #FFD700;
-            --flash-orange: #FF6B35;
-            --electric-blue: #0066FF;
-            --deep-purple: #1A0B2E;
             --pure-black: #000000;
-            --off-white: #F5F5F5;
-            --energy-gradient: linear-gradient(135deg, var(--flash-orange) 0%, var(--electric-blue) 100%);
+            --bg-dark: #0c0c0c;
+            --gray-dark: #1a1a1a;
+            --gray-mid: #404040;
+            --gray-border: #2d2d2d;
+            --off-white: #e8e8e8;
+            --white: #ffffff;
+            --accent-blue: #3b82f6;
+            --accent-blue-dim: #1e40af;
+            --energy-gradient: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
         }
 
         * {
@@ -26,7 +29,7 @@
 
         body {
             font-family: 'Work Sans', sans-serif;
-            background: var(--deep-purple);
+            background: var(--bg-dark);
             color: var(--off-white);
             overflow-x: hidden;
             line-height: 1.6;
@@ -40,9 +43,9 @@
             width: 100%;
             height: 100%;
             background: 
-                radial-gradient(circle at 20% 50%, rgba(255, 107, 53, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(0, 102, 255, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 40% 20%, rgba(255, 215, 0, 0.05) 0%, transparent 50%);
+                radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(30, 64, 175, 0.06) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.02) 0%, transparent 50%);
             z-index: 0;
             animation: pulse 15s ease-in-out infinite;
         }
@@ -85,7 +88,7 @@
             font-weight: 600;
             text-transform: uppercase;
             font-size: 0.9rem;
-            border: 2px solid var(--flash-orange);
+            border: 2px solid var(--accent-blue);
             background: transparent;
             color: var(--off-white);
             border-radius: 25px;
@@ -94,7 +97,7 @@
         }
 
         .nav-btn:hover {
-            background: var(--flash-orange);
+            background: var(--accent-blue);
             transform: translateY(-2px);
         }
 
@@ -110,7 +113,7 @@
         }
 
         #userName {
-            color: var(--flash-yellow);
+            color: var(--white);
             font-weight: 600;
         }
 
@@ -161,7 +164,7 @@
             justify-content: center;
             position: relative;
             transform: rotate(-5deg);
-            box-shadow: 0 10px 40px rgba(255, 107, 53, 0.5);
+            box-shadow: 0 10px 40px rgba(59, 130, 246, 0.35);
             animation: logoFloat 3s ease-in-out infinite;
         }
 
@@ -172,7 +175,7 @@
 
         .lightning {
             font-size: 3rem;
-            filter: drop-shadow(0 0 10px var(--flash-yellow));
+            filter: drop-shadow(0 0 10px var(--accent-blue));
         }
 
         .logo-text {
@@ -183,13 +186,13 @@
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 40px rgba(255, 107, 53, 0.5);
+            text-shadow: 0 0 40px rgba(59, 130, 246, 0.4);
             animation: glow 2s ease-in-out infinite alternate;
         }
 
         @keyframes glow {
-            from { filter: drop-shadow(0 0 20px rgba(255, 107, 53, 0.5)); }
-            to { filter: drop-shadow(0 0 40px rgba(0, 102, 255, 0.8)); }
+            from { filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.4)); }
+            to { filter: drop-shadow(0 0 40px rgba(59, 130, 246, 0.6)); }
         }
 
         .hero-content {
@@ -220,7 +223,7 @@
         }
 
         .tagline-highlight {
-            color: var(--flash-yellow);
+            color: var(--accent-blue);
             position: relative;
             display: inline-block;
         }
@@ -232,7 +235,7 @@
             left: 0;
             width: 100%;
             height: 15px;
-            background: var(--flash-orange);
+            background: var(--accent-blue);
             opacity: 0.3;
             z-index: -1;
             transform: skewY(-2deg);
@@ -257,7 +260,7 @@
             color: white;
             text-decoration: none;
             border-radius: 50px;
-            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.4);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.35);
             transition: all 0.3s ease;
             border: 3px solid transparent;
             position: relative;
@@ -283,7 +286,7 @@
 
         .cta-button:hover {
             transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 15px 40px rgba(255, 107, 53, 0.6);
+            box-shadow: 0 15px 40px rgba(59, 130, 246, 0.4);
         }
 
         /* Modal Styles */
@@ -311,8 +314,8 @@
         }
 
         .modal-content {
-            background: var(--deep-purple);
-            border: 2px solid var(--flash-orange);
+            background: var(--gray-dark);
+            border: 2px solid var(--accent-blue);
             border-radius: 20px;
             padding: 3rem;
             max-width: 500px;
@@ -345,7 +348,7 @@
         }
 
         .modal-close:hover {
-            color: var(--flash-orange);
+            color: var(--accent-blue);
         }
 
         .modal-title {
@@ -353,7 +356,7 @@
             font-size: 2.5rem;
             margin-bottom: 2rem;
             text-align: center;
-            color: var(--flash-yellow);
+            color: var(--white);
         }
 
         .auth-tabs {
@@ -366,7 +369,7 @@
             flex: 1;
             padding: 1rem;
             background: transparent;
-            border: 2px solid var(--flash-orange);
+            border: 2px solid var(--accent-blue);
             color: var(--off-white);
             font-weight: 600;
             text-transform: uppercase;
@@ -392,7 +395,7 @@
         .features {
             position: relative;
             padding: 8rem 2rem;
-            background: linear-gradient(180deg, var(--deep-purple) 0%, #0A0015 100%);
+            background: linear-gradient(180deg, var(--bg-dark) 0%, var(--pure-black) 100%);
         }
 
         .section-title {
@@ -425,7 +428,7 @@
             background: rgba(255, 255, 255, 0.03);
             padding: 3rem 2rem;
             border-radius: 20px;
-            border: 2px solid rgba(255, 107, 53, 0.2);
+            border: 2px solid var(--gray-border);
             transition: all 0.4s ease;
             position: relative;
             overflow: hidden;
@@ -446,9 +449,9 @@
 
         .feature-card:hover {
             transform: translateY(-10px);
-            border-color: var(--flash-orange);
+            border-color: var(--accent-blue);
             background: rgba(255, 255, 255, 0.05);
-            box-shadow: 0 20px 60px rgba(255, 107, 53, 0.3);
+            box-shadow: 0 20px 60px rgba(59, 130, 246, 0.2);
         }
 
         .feature-card:hover::before {
@@ -476,7 +479,7 @@
             font-size: 2rem;
             margin-bottom: 1rem;
             letter-spacing: 0.05em;
-            color: var(--flash-yellow);
+            color: var(--accent-blue);
         }
 
         .feature-description {
@@ -499,7 +502,7 @@
             padding: 4rem 3rem;
             background: var(--energy-gradient);
             border-radius: 30px;
-            box-shadow: 0 20px 60px rgba(255, 107, 53, 0.5);
+            box-shadow: 0 20px 60px rgba(59, 130, 246, 0.3);
             transform: skewY(-1deg);
         }
 
@@ -531,7 +534,7 @@
             text-transform: uppercase;
             letter-spacing: 0.1em;
             background: white;
-            color: var(--flash-orange);
+            color: var(--accent-blue-dim);
             text-decoration: none;
             border-radius: 50px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
@@ -541,14 +544,14 @@
         .survey-link:hover {
             transform: translateY(-3px) scale(1.05);
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
-            background: var(--flash-yellow);
+            background: var(--accent-blue);
         }
 
         /* Contact Form Section */
         .contact-section {
             position: relative;
             padding: 8rem 2rem;
-            background: linear-gradient(180deg, #0A0015 0%, var(--deep-purple) 100%);
+            background: linear-gradient(180deg, var(--pure-black) 0%, var(--bg-dark) 100%);
         }
 
         .contact-container {
@@ -573,7 +576,7 @@
             font-size: 1.1rem;
             letter-spacing: 0.05em;
             text-transform: uppercase;
-            color: var(--flash-yellow);
+            color: var(--accent-blue);
         }
 
         input, textarea {
@@ -582,7 +585,7 @@
             font-size: 1.1rem;
             font-family: 'Work Sans', sans-serif;
             background: rgba(255, 255, 255, 0.05);
-            border: 2px solid rgba(255, 107, 53, 0.3);
+            border: 2px solid var(--gray-border);
             border-radius: 15px;
             color: var(--off-white);
             transition: all 0.3s ease;
@@ -590,9 +593,9 @@
 
         input:focus, textarea:focus {
             outline: none;
-            border-color: var(--flash-orange);
+            border-color: var(--accent-blue);
             background: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 0 20px rgba(255, 107, 53, 0.3);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
         }
 
         textarea {
@@ -612,7 +615,7 @@
             border: none;
             border-radius: 50px;
             cursor: pointer;
-            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.4);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.35);
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
@@ -635,7 +638,7 @@
 
         .submit-button:hover, .btn-primary:hover {
             transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(255, 107, 53, 0.6);
+            box-shadow: 0 15px 40px rgba(59, 130, 246, 0.4);
         }
 
         .submit-button:active, .btn-primary:active {
@@ -672,7 +675,7 @@
             background: var(--pure-black);
             padding: 3rem 2rem;
             text-align: center;
-            border-top: 3px solid var(--flash-orange);
+            border-top: 3px solid var(--accent-blue);
         }
 
         .footer-text {
@@ -745,6 +748,43 @@
             opacity: 1;
             transform: translateY(0);
         }
+
+        /* Dashboard (logged-in) */
+        #dashboardNav { display: none; gap: 0.5rem; align-items: center; }
+        #dashboardNav.show { display: flex; }
+        #dashboardNav .nav-btn { font-size: 0.85rem; padding: 0.5rem 1rem; }
+        #appArea { display: none; position: relative; min-height: 60vh; padding: 6rem 2rem 4rem; max-width: 1100px; margin: 0 auto; }
+        #appArea.show { display: block; }
+        .app-view { display: none; }
+        .app-view.active { display: block; }
+        .page-head { font-family: 'Anton', sans-serif; font-size: 2rem; margin-bottom: 1.5rem; color: var(--white); }
+        .card { background: var(--gray-dark); border: 1px solid var(--gray-border); border-radius: 16px; padding: 1.5rem; margin-bottom: 1rem; }
+        .card h3 { font-size: 1.2rem; margin-bottom: 0.75rem; color: var(--off-white); }
+        .program-list { display: grid; gap: 0.75rem; }
+        .program-item { display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 12px; cursor: pointer; transition: all 0.2s; border: 1px solid var(--gray-border); }
+        .program-item:hover { border-color: var(--accent-blue); background: rgba(59,130,246,0.1); }
+        .program-item.preloaded { border-left: 4px solid var(--accent-blue); }
+        .program-detail { margin-top: 1.5rem; }
+        .session-block { margin-bottom: 1.5rem; }
+        .session-block h4 { font-size: 1.1rem; color: var(--accent-blue); margin-bottom: 0.5rem; }
+        .exercise-row { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .exercise-row .name { flex: 1; }
+        .exercise-row input.sets-reps { width: 50px; padding: 0.35rem; text-align: center; }
+        .btn-sm { padding: 0.4rem 0.8rem; font-size: 0.85rem; border-radius: 8px; cursor: pointer; border: 1px solid var(--accent-blue); background: transparent; color: var(--off-white); }
+        .btn-sm:hover { background: var(--accent-blue); }
+        .btn-sm.primary { background: var(--energy-gradient); border: none; }
+        .inline-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .history-list { list-style: none; }
+        .history-list li { padding: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .history-list .date { color: var(--accent-blue); font-weight: 600; }
+        .log-sets { display: grid; gap: 0.5rem; }
+        .set-row { display: flex; gap: 0.5rem; align-items: center; }
+        .set-row input { width: 60px; padding: 0.4rem; }
+        .alternatives-list { margin-top: 1rem; }
+        .alt-item { padding: 0.5rem; background: rgba(0,0,0,0.2); border-radius: 8px; margin-bottom: 0.5rem; }
+        .alt-item .last-load { color: var(--accent-blue); font-size: 0.9rem; }
+        .modal-content.wide { max-width: 700px; }
+        #exerciseDetailModal .modal-content { max-width: 560px; }
     </style>
 </head>
 <body>
@@ -754,6 +794,11 @@
     <nav>
         <div class="nav-logo">⚡ FLASHFIT</div>
         <div class="nav-buttons">
+            <div id="dashboardNav">
+                <button class="nav-btn" onclick="showAppView('programs')">Programs</button>
+                <button class="nav-btn" onclick="showAppView('logWorkout')">Log Workout</button>
+                <button class="nav-btn" onclick="showAppView('history')">History</button>
+            </div>
             <div id="authButtons">
                 <button class="nav-btn" onclick="openModal('login')">Login</button>
                 <button class="nav-btn primary" onclick="openModal('register')">Sign Up</button>
@@ -811,6 +856,64 @@
                 </div>
                 <button type="submit" class="btn-primary">Create Account</button>
             </form>
+        </div>
+    </div>
+
+    <!-- App Area (logged-in: Programs, Log Workout, History) -->
+    <div id="appArea">
+        <div id="programsView" class="app-view">
+            <h2 class="page-head">Programs</h2>
+            <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+                <div class="card" style="min-width: 280px;">
+                    <h3>Preloaded</h3>
+                    <div id="preloadedProgramList" class="program-list"></div>
+                    <h3 style="margin-top: 1.5rem;">My Programs</h3>
+                    <div id="myProgramList" class="program-list"></div>
+                    <button type="button" class="btn-sm primary" style="margin-top: 1rem;" onclick="createNewProgram()">+ New Program</button>
+                </div>
+                <div class="card" style="flex: 1; min-width: 300px;">
+                    <div id="programDetailPane">
+                        <p style="color: rgba(245,245,245,0.6);">Select a program or create one.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="logWorkoutView" class="app-view">
+            <h2 class="page-head">Log Workout</h2>
+            <div class="card">
+                <div class="form-group">
+                    <label>Program</label>
+                    <select id="logProgramSelect"><option value="">-- Free workout --</option></select>
+                </div>
+                <div class="form-group">
+                    <label>Session</label>
+                    <select id="logSessionSelect"><option value="">-- Select program first --</option></select>
+                </div>
+                <button type="button" class="btn-sm primary" onclick="loadLogSession()">Load session</button>
+            </div>
+            <div id="logExercisesPane"></div>
+            <div id="logAddExerciseBtn" style="display: none; margin-top: 0.5rem;">
+                <button type="button" class="btn-sm" onclick="addExerciseToLog()">+ Add exercise</button>
+            </div>
+            <div id="logSaveArea" style="display: none; margin-top: 1rem;">
+                <button type="button" class="submit-button" onclick="saveWorkoutLog()">Save workout</button>
+            </div>
+        </div>
+        <div id="historyView" class="app-view">
+            <h2 class="page-head">Workout History</h2>
+            <div id="historyLogList" class="card"></div>
+            <div id="historyDetailPane" style="display: none;"></div>
+        </div>
+    </div>
+
+    <!-- Exercise detail modal (history + alternatives) -->
+    <div id="exerciseDetailModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeExerciseDetail()">&times;</button>
+            <h2 class="modal-title" id="exerciseDetailTitle">Exercise</h2>
+            <div id="exerciseHistoryBlock"></div>
+            <h3 style="margin-top: 1.5rem; color: var(--accent-blue);">Recommended alternatives</h3>
+            <div id="exerciseAlternativesBlock" class="alternatives-list"></div>
         </div>
     </div>
 
@@ -955,12 +1058,18 @@
         function showUserInfo(user) {
             document.getElementById('authButtons').style.display = 'none';
             document.getElementById('userInfo').style.display = 'flex';
+            document.getElementById('dashboardNav').classList.add('show');
+            document.getElementById('appArea').classList.add('show');
             document.getElementById('userName').textContent = `Welcome, ${user.name}!`;
+            showAppView('programs');
+            loadPrograms();
         }
 
         function showAuthButtons() {
             document.getElementById('authButtons').style.display = 'flex';
             document.getElementById('userInfo').style.display = 'none';
+            document.getElementById('dashboardNav').classList.remove('show');
+            document.getElementById('appArea').classList.remove('show');
         }
 
         function logout() {
@@ -1195,6 +1304,474 @@
             if (e.target.id === 'authModal') {
                 closeModal();
             }
+        });
+
+        // --- Dashboard / App (workout tracking) ---
+        function getToken() {
+            return localStorage.getItem('flashfit_token');
+        }
+        function authHeaders() {
+            const t = getToken();
+            return t ? { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + t } : { 'Content-Type': 'application/json' };
+        }
+
+        function showAppView(viewId) {
+            document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
+            const id = viewId === 'programs' ? 'programsView' : viewId === 'logWorkout' ? 'logWorkoutView' : 'historyView';
+            document.getElementById(id).classList.add('active');
+            if (viewId === 'programs') loadPrograms();
+            if (viewId === 'logWorkout') loadLogPrograms();
+            if (viewId === 'history') loadHistory();
+        }
+
+        let currentProgramId = null;
+        let programsCache = [];
+
+        async function loadPrograms() {
+            const preEl = document.getElementById('preloadedProgramList');
+            const myEl = document.getElementById('myProgramList');
+            preEl.innerHTML = '<p style="color:rgba(245,245,245,0.5);">Loading...</p>';
+            myEl.innerHTML = '';
+            try {
+                const res = await fetch(API_URL + '/programs', { headers: authHeaders() });
+                const data = await res.json();
+                if (!data.success) { preEl.innerHTML = '<p style="color:rgba(245,245,245,0.5);">Failed to load.</p>'; return; }
+                programsCache = data.programs || [];
+                const preloaded = data.preloaded || programsCache.filter(p => p.is_preloaded);
+                const myPrograms = data.myPrograms || programsCache.filter(p => !p.is_preloaded);
+                preEl.innerHTML = preloaded.map(p => `<div class="program-item preloaded" data-id="${p.id}" onclick="selectProgram(${p.id})">${p.name}</div>`).join('') || '<p style="color:rgba(245,245,245,0.5);">No preloaded programs.</p>';
+                myEl.innerHTML = myPrograms.map(p => `<div class="program-item" data-id="${p.id}" onclick="selectProgram(${p.id})">${p.name}</div>`).join('') || '<p style="color:rgba(245,245,245,0.5);">No programs yet. Copy a preloaded one or create new.</p>';
+            } catch (e) {
+                preEl.innerHTML = '<p style="color:rgba(245,245,245,0.5);">Error loading programs.</p>';
+            }
+        }
+
+        async function selectProgram(id) {
+            currentProgramId = id;
+            const pane = document.getElementById('programDetailPane');
+            pane.innerHTML = '<p style="color:rgba(245,245,245,0.6);">Loading...</p>';
+            try {
+                const res = await fetch(API_URL + '/programs/' + id, { headers: authHeaders() });
+                const data = await res.json();
+                if (!data.success) { pane.innerHTML = '<p style="color:rgba(245,245,245,0.5);">Failed to load program.</p>'; return; }
+                renderProgramDetail(data.program);
+            } catch (e) {
+                pane.innerHTML = '<p style="color:rgba(245,245,245,0.5);">Error loading program.</p>';
+            }
+        }
+
+        function renderProgramDetail(program) {
+            const pane = document.getElementById('programDetailPane');
+            const isPreloaded = program.is_preloaded;
+            const isMine = !isPreloaded && program.user_id;
+            pane.innerHTML = `
+                <h3>${program.name}</h3>
+                ${program.description ? `<p style="color:rgba(245,245,245,0.7); margin-bottom:1rem;">${program.description}</p>` : ''}
+                ${isPreloaded ? `<button type="button" class="btn-sm primary" onclick="copyProgram(${program.id})">Copy to my programs</button>` : ''}
+                ${isMine ? `<button type="button" class="btn-sm" onclick="updateProgramName()">Edit name</button>` : ''}
+                <div class="program-detail" style="margin-top:1rem;"></div>
+            `;
+            const detailDiv = pane.querySelector('.program-detail');
+            (program.sessions || []).forEach(session => {
+                const sessionBlock = document.createElement('div');
+                sessionBlock.className = 'session-block';
+                sessionBlock.innerHTML = `
+                    <h4>${session.name} ${isMine ? `<button type="button" class="btn-sm" onclick="removeSession(${program.id}, ${session.id})">Remove</button>` : ''}</h4>
+                    <div class="session-exercises"></div>
+                    ${isMine ? `<button type="button" class="btn-sm" onclick="openAddExerciseModal(${program.id}, ${session.id})">+ Add exercise</button>` : ''}
+                `;
+                const exContainer = sessionBlock.querySelector('.session-exercises');
+                (session.exercises || []).forEach(ex => {
+                    const row = document.createElement('div');
+                    row.className = 'exercise-row';
+                    row.innerHTML = `
+                        <span class="name"><a href="#" onclick="openExerciseDetail(${ex.exercise_id}); return false;">${ex.exercise_name}</a></span>
+                        ${isMine ? `
+                            <input type="number" class="sets-reps" value="${ex.default_sets}" min="1" onchange="updatePse(${program.id}, ${session.id}, ${ex.id}, 'default_sets', this.value)" placeholder="Sets">
+                            <input type="number" class="sets-reps" value="${ex.default_reps}" min="1" onchange="updatePse(${program.id}, ${session.id}, ${ex.id}, 'default_reps', this.value)" placeholder="Reps">
+                            <button type="button" class="btn-sm" onclick="removePse(${program.id}, ${session.id}, ${ex.id})">Remove</button>
+                        ` : `<span>${ex.default_sets} × ${ex.default_reps}</span>`}
+                    `;
+                    exContainer.appendChild(row);
+                });
+                detailDiv.appendChild(sessionBlock);
+            });
+            if (isMine) {
+                const addSessionBtn = document.createElement('button');
+                addSessionBtn.type = 'button';
+                addSessionBtn.className = 'btn-sm primary';
+                addSessionBtn.textContent = '+ Add session';
+                addSessionBtn.onclick = () => addSession(program.id);
+                detailDiv.appendChild(addSessionBtn);
+            }
+        }
+
+        async function copyProgram(id) {
+            try {
+                const res = await fetch(API_URL + '/programs', {
+                    method: 'POST',
+                    headers: authHeaders(),
+                    body: JSON.stringify({ copyFromId: id })
+                });
+                const data = await res.json();
+                if (!data.success) { alert(data.message || 'Copy failed'); return; }
+                loadPrograms();
+                if (data.program && data.program.id) selectProgram(data.program.id);
+            } catch (e) {
+                alert('Request failed');
+            }
+        }
+
+        async function createNewProgram() {
+            try {
+                const res = await fetch(API_URL + '/programs', {
+                    method: 'POST',
+                    headers: authHeaders(),
+                    body: JSON.stringify({ name: 'My Program', description: '' })
+                });
+                const data = await res.json();
+                if (!data.success) { alert(data.message || 'Create failed'); return; }
+                loadPrograms();
+                if (data.program && data.program.id) selectProgram(data.program.id);
+            } catch (e) {
+                alert('Request failed');
+            }
+        }
+
+        function updateProgramName() {
+            const name = prompt('Program name', programsCache.find(p => p.id === currentProgramId)?.name);
+            if (name == null) return;
+            fetch(API_URL + '/programs/' + currentProgramId, {
+                method: 'PUT',
+                headers: authHeaders(),
+                body: JSON.stringify({ name, description: programsCache.find(p => p.id === currentProgramId)?.description })
+            }).then(r => r.json()).then(data => { if (data.success) loadPrograms(); selectProgram(currentProgramId); }).catch(() => {});
+        }
+
+        async function addSession(programId) {
+            const name = prompt('Session name', 'New Session');
+            if (!name) return;
+            try {
+                const res = await fetch(API_URL + '/programs/' + programId + '/sessions', {
+                    method: 'POST',
+                    headers: authHeaders(),
+                    body: JSON.stringify({ name })
+                });
+                const data = await res.json();
+                if (data.success) selectProgram(programId);
+            } catch (e) {}
+        }
+
+        async function removeSession(programId, sessionId) {
+            if (!confirm('Remove this session?')) return;
+            try {
+                const res = await fetch(API_URL + '/programs/' + programId + '/sessions/' + sessionId, { method: 'DELETE', headers: authHeaders() });
+                const data = await res.json();
+                if (data.success) selectProgram(programId);
+            } catch (e) {}
+        }
+
+        async function updatePse(programId, sessionId, pseId, field, value) {
+            const body = field === 'default_sets' ? { default_sets: parseInt(value, 10) } : { default_reps: parseInt(value, 10) };
+            try {
+                await fetch(API_URL + '/programs/' + programId + '/sessions/' + sessionId + '/exercises/' + pseId, {
+                    method: 'PUT',
+                    headers: authHeaders(),
+                    body: JSON.stringify(body)
+                });
+            } catch (e) {}
+        }
+
+        async function removePse(programId, sessionId, pseId) {
+            if (!confirm('Remove this exercise from session?')) return;
+            try {
+                const res = await fetch(API_URL + '/programs/' + programId + '/sessions/' + sessionId + '/exercises/' + pseId, { method: 'DELETE', headers: authHeaders() });
+                if ((await res.json()).success) selectProgram(programId);
+            } catch (e) {}
+        }
+
+        let exerciseListCache = [];
+        async function openAddExerciseModal(programId, sessionId) {
+            if (!exerciseListCache.length) {
+                const res = await fetch(API_URL + '/exercises');
+                const data = await res.json();
+                exerciseListCache = data.exercises || [];
+            }
+            const name = prompt('Exercise name (or choose from list later)', '');
+            if (name == null) return;
+            const ex = exerciseListCache.find(e => e.name.toLowerCase() === name.toLowerCase()) || exerciseListCache.find(e => e.name.toLowerCase().includes(name.toLowerCase()));
+            const exercise_id = ex ? ex.id : (exerciseListCache[0] && exerciseListCache[0].id);
+            if (!exercise_id) { alert('No exercises in database'); return; }
+            try {
+                const res = await fetch(API_URL + '/programs/' + programId + '/sessions/' + sessionId + '/exercises', {
+                    method: 'POST',
+                    headers: authHeaders(),
+                    body: JSON.stringify({ exercise_id, default_sets: 3, default_reps: 10 })
+                });
+                const data = await res.json();
+                if (data.success) selectProgram(programId);
+            } catch (e) {}
+        }
+
+        // Log workout
+        let logProgramId = null;
+        let logSessionId = null;
+        let logExercises = [];
+
+        async function loadLogPrograms() {
+            const sel = document.getElementById('logProgramSelect');
+            sel.innerHTML = '<option value="">-- Free workout --</option>';
+            try {
+                const res = await fetch(API_URL + '/programs', { headers: authHeaders() });
+                const data = await res.json();
+                if (!data.success) return;
+                (data.programs || []).forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p.id;
+                    opt.textContent = p.name;
+                    sel.appendChild(opt);
+                });
+            } catch (e) {}
+            document.getElementById('logSessionSelect').innerHTML = '<option value="">-- Select program first --</option>';
+            document.getElementById('logExercisesPane').innerHTML = '';
+            document.getElementById('logSaveArea').style.display = 'none';
+        }
+
+        async function onLogProgramChange() {
+            const programId = document.getElementById('logProgramSelect').value;
+            const sessionSel = document.getElementById('logSessionSelect');
+            sessionSel.innerHTML = '<option value="">-- Select session --</option>';
+            if (!programId) return;
+            try {
+                const res = await fetch(API_URL + '/programs/' + programId, { headers: authHeaders() });
+                const data = await res.json();
+                if (!data.success || !data.program.sessions) return;
+                data.program.sessions.forEach(s => {
+                    const opt = document.createElement('option');
+                    opt.value = s.id;
+                    opt.textContent = s.name;
+                    sessionSel.appendChild(opt);
+                });
+            } catch (e) {}
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const logProgSel = document.getElementById('logProgramSelect');
+            if (logProgSel) logProgSel.addEventListener('change', onLogProgramChange);
+        });
+
+        async function loadLogSession() {
+            logProgramId = document.getElementById('logProgramSelect').value || null;
+            logSessionId = document.getElementById('logSessionSelect').value || null;
+            if (logSessionId && logProgramId) {
+                try {
+                    const progRes = await fetch(API_URL + '/programs/' + logProgramId, { headers: authHeaders() });
+                    const progData = await progRes.json();
+                    const session = progData.program && progData.program.sessions && progData.program.sessions.find(s => s.id == logSessionId);
+                    if (session && session.exercises) {
+                        logExercises = session.exercises.map(e => ({
+                            exercise_id: e.exercise_id,
+                            exercise_name: e.exercise_name,
+                            default_sets: e.default_sets,
+                            default_reps: e.default_reps,
+                            sets: Array.from({ length: e.default_sets || 3 }, (_, i) => ({ set_index: i, reps: null, load: null }))
+                        }));
+                        renderLogExercises();
+                        document.getElementById('logSaveArea').style.display = 'block';
+                        document.getElementById('logAddExerciseBtn').style.display = 'none';
+                    }
+                } catch (e) {
+                    console.error(e);
+                }
+            } else {
+                logExercises = [];
+                try {
+                    const exRes = await fetch(API_URL + '/exercises');
+                    const exData = await exRes.json();
+                    const exercises = exData.exercises || [];
+                    if (exercises.length) {
+                        const add = prompt('Add exercise by name (first match)', '');
+                        const ex = exercises.find(e => e.name.toLowerCase().includes((add || '').toLowerCase())) || exercises[0];
+                        logExercises = [{ exercise_id: ex.id, exercise_name: ex.name, default_sets: 3, default_reps: 10, sets: [{ set_index: 0, reps: null, load: null }, { set_index: 1, reps: null, load: null }, { set_index: 2, reps: null, load: null }] }];
+                        renderLogExercises();
+                        document.getElementById('logSaveArea').style.display = 'block';
+                        document.getElementById('logAddExerciseBtn').style.display = 'inline-block';
+                    }
+                } catch (e) {}
+            }
+        }
+
+        async function addExerciseToLog() {
+            if (!exerciseListCache.length) {
+                const res = await fetch(API_URL + '/exercises');
+                const data = await res.json();
+                exerciseListCache = data.exercises || [];
+            }
+            const add = prompt('Exercise name (partial match)', '');
+            const ex = exerciseListCache.find(e => e.name.toLowerCase().includes((add || '').toLowerCase())) || exerciseListCache[0];
+            if (!ex) return;
+            logExercises.push({ exercise_id: ex.id, exercise_name: ex.name, default_sets: 3, default_reps: 10, sets: [{ set_index: 0, reps: null, load: null }, { set_index: 1, reps: null, load: null }, { set_index: 2, reps: null, load: null }] });
+            renderLogExercises();
+        }
+
+        function renderLogExercises() {
+            const pane = document.getElementById('logExercisesPane');
+            pane.innerHTML = '<h3 style="margin-bottom:0.5rem;">Exercises</h3>';
+            logExercises.forEach((ex, exIdx) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                let setsHtml = (ex.sets || []).map((s, i) => `
+                    <div class="set-row">
+                        <span>Set ${i + 1}</span>
+                        <input type="number" placeholder="Reps" value="${s.reps != null ? s.reps : ''}" onchange="logExercises[${exIdx}].sets[${i}].reps = this.value ? parseInt(this.value,10) : null">
+                        <input type="number" step="0.5" placeholder="Load (lb)" value="${s.load != null ? s.load : ''}" onchange="logExercises[${exIdx}].sets[${i}].load = this.value ? parseFloat(this.value) : null">
+                    </div>
+                `).join('');
+                card.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <strong><a href="#" onclick="openExerciseDetail(${ex.exercise_id}); return false;">${ex.exercise_name}</a></strong>
+                        <button type="button" class="btn-sm" onclick="addLogSet(${exIdx})">+ Set</button>
+                    </div>
+                    <div class="log-sets" style="margin-top:0.5rem;">${setsHtml}</div>
+                `;
+                pane.appendChild(card);
+            });
+        }
+
+        function addLogSet(exIdx) {
+            const ex = logExercises[exIdx];
+            if (!ex.sets) ex.sets = [];
+            ex.sets.push({ set_index: ex.sets.length, reps: null, load: null });
+            renderLogExercises();
+        }
+
+        async function saveWorkoutLog() {
+            const sessionName = logSessionId
+                ? (document.getElementById('logSessionSelect').options[document.getElementById('logSessionSelect').selectedIndex]?.text || 'Workout')
+                : 'Free workout';
+            const setsPayload = [];
+            let hasAny = false;
+            logExercises.forEach(ex => {
+                (ex.sets || []).forEach((s, i) => {
+                    if (s.reps != null || s.load != null) hasAny = true;
+                    setsPayload.push({
+                        exercise_id: ex.exercise_id,
+                        set_index: i,
+                        reps: s.reps != null ? s.reps : null,
+                        load: s.load != null ? s.load : null
+                    });
+                });
+            });
+            if (!hasAny) {
+                alert('Add at least one set (reps or load) before saving.');
+                return;
+            }
+            try {
+                const res = await fetch(API_URL + '/workout-logs', {
+                    method: 'POST',
+                    headers: authHeaders(),
+                    body: JSON.stringify({
+                        program_id: logProgramId || undefined,
+                        program_session_id: logSessionId || undefined,
+                        session_name: sessionName,
+                        workout_date: new Date().toISOString().slice(0, 10),
+                        sets: setsPayload
+                    })
+                });
+                const data = await res.json();
+                if (!data.success) { alert(data.message || 'Save failed'); return; }
+                alert('Workout saved.');
+                document.getElementById('logExercisesPane').innerHTML = '';
+                document.getElementById('logSaveArea').style.display = 'none';
+                logExercises = [];
+            } catch (e) {
+                alert('Request failed');
+            }
+        }
+
+        // History
+        async function loadHistory() {
+            const listEl = document.getElementById('historyLogList');
+            listEl.innerHTML = '<p style="color:rgba(245,245,245,0.6);">Loading...</p>';
+            try {
+                const res = await fetch(API_URL + '/workout-logs', { headers: authHeaders() });
+                const data = await res.json();
+                if (!data.success || !data.workout_logs) { listEl.innerHTML = '<p>No workouts yet.</p>'; return; }
+                listEl.innerHTML = '<ul class="history-list">' + data.workout_logs.map(log => `
+                    <li>
+                        <span class="date">${log.workout_date}</span> — ${log.session_name}
+                        <button type="button" class="btn-sm" onclick="loadHistoryDetail(${log.id})">View</button>
+                    </li>
+                `).join('') + '</ul>';
+            } catch (e) {
+                document.getElementById('historyLogList').innerHTML = '<p>Error loading history.</p>';
+            }
+        }
+
+        async function loadHistoryDetail(id) {
+            try {
+                const res = await fetch(API_URL + '/workout-logs/' + id, { headers: authHeaders() });
+                const data = await res.json();
+                if (!data.success) return;
+                const log = data.workout_log;
+                const pane = document.getElementById('historyDetailPane');
+                pane.style.display = 'block';
+                pane.innerHTML = `
+                    <h3>${log.session_name} — ${log.workout_date}</h3>
+                    <div class="card">
+                        ${(log.exercises || []).map(e => `
+                            <div><strong><a href="#" onclick="openExerciseDetail(${e.exercise_id}); return false;">${e.exercise_name}</a></strong>
+                            ${(e.sets || []).map(s => ` ${s.reps != null ? s.reps : '–'} reps ${s.load != null ? '@ ' + s.load + ' lb' : ''}`).join(', ')}</div>
+                        `).join('')}
+                    </div>
+                `;
+            } catch (e) {}
+        }
+
+        // Exercise detail modal (history + alternatives)
+        let currentExerciseId = null;
+        let currentExerciseName = '';
+
+        async function openExerciseDetail(exerciseId) {
+            currentExerciseId = exerciseId;
+            const token = getToken();
+            if (!token) return;
+            try {
+                const [histRes, altRes] = await Promise.all([
+                    fetch(API_URL + '/exercises/' + exerciseId + '/history', { headers: authHeaders() }),
+                    fetch(API_URL + '/exercises/' + exerciseId + '/alternatives', { headers: authHeaders() })
+                ]);
+                const histData = await histRes.json();
+                const altData = await altRes.json();
+                const exNameRes = await fetch(API_URL + '/exercises');
+                const exNameData = await exNameRes.json();
+                const ex = (exNameData.exercises || []).find(e => e.id == exerciseId);
+                currentExerciseName = ex ? ex.name : 'Exercise';
+                document.getElementById('exerciseDetailTitle').textContent = currentExerciseName;
+                const historyBlock = document.getElementById('exerciseHistoryBlock');
+                const history = histData.history || [];
+                historyBlock.innerHTML = history.length
+                    ? '<h4 style="color:var(--accent-blue);">Your history</h4><ul class="history-list">' + history.map(h => `
+                        <li><span class="date">${h.workout_date}</span> ${h.session_name}: ${(h.sets || []).map(s => `${s.reps != null ? s.reps : '–'} reps ${s.load != null ? '@ ' + s.load + ' lb' : ''}`).join(', ')}</li>
+                    `).join('') + '</ul>'
+                    : '<p style="color:rgba(245,245,245,0.6);">No history for this exercise yet.</p>';
+                const altBlock = document.getElementById('exerciseAlternativesBlock');
+                const alts = altData.alternatives || [];
+                altBlock.innerHTML = alts.length
+                    ? alts.map(a => `<div class="alt-item"><strong>${a.name}</strong> ${a.last_load != null ? `<span class="last-load">Last: ${a.last_reps != null ? a.last_reps + ' reps ' : ''}@ ${a.last_load} lb</span>` : '(no history)'}</div>`).join('')
+                    : '<p style="color:rgba(245,245,245,0.6);">No alternatives in the same muscle group.</p>';
+                document.getElementById('exerciseDetailModal').classList.add('active');
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function closeExerciseDetail() {
+            document.getElementById('exerciseDetailModal').classList.remove('active');
+        }
+
+        document.getElementById('exerciseDetailModal').addEventListener('click', (e) => {
+            if (e.target.id === 'exerciseDetailModal') closeExerciseDetail();
         });
     </script>
 </body>
