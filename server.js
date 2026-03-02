@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const { initializeDatabase } = require('./config/database');
 
 // Initialize Express app
@@ -10,6 +11,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static(__dirname));
 
 // Initialize database
 initializeDatabase();
@@ -21,14 +23,6 @@ app.use('/api/exercises', require('./routes/exercises'));
 app.use('/api/programs', require('./routes/programs'));
 app.use('/api/workout-logs', require('./routes/workout-logs'));
 
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.json({
-    success: true,
-    message: 'FlashFit API is running',
-    timestamp: new Date().toISOString()
-  });
-});
 
 // Root endpoint
 app.get('/', (req, res) => {
