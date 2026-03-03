@@ -2158,16 +2158,70 @@
                 const log = data.workout_log;
                 const pane = document.getElementById('historyDetailPane');
                 pane.style.display = 'block';
-                pane.innerHTML = `
-                    <h3>${log.session_name} — ${log.workout_date}</h3>
-                    <div class="card">
-                        ${(log.exercises || []).map(e => `
-                            <div><strong><a href="#" onclick="openExerciseDetail(${e.exercise_id}); return false;">${e.exercise_name}</a></strong>
-                            ${(e.sets || []).map(s => ` ${s.reps != null ? s.reps : '–'} reps ${s.load != null ? '@ ' + s.load + ' lb' : ''}`).join(', ')}</div>
-                        `).join('')}
+
+                let tableHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3 style="margin: 0;">${log.session_name} — ${log.workout_date}</h3>
+                        <button type="button" class="btn-sm btn-delete" onclick="deleteWorkoutLog(${log.id})" style="padding: 0.5rem 1rem;">Delete Workout</button>
+                    </div>
+                    <div class="card" style="overflow-x: auto; padding: 0;">
+                        <table class="history-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+                            <thead>
+                                <tr style="background: rgba(59, 130, 246, 0.1); border-bottom: 1px solid var(--gray-border);">
+                                    <th style="padding: 1rem; color: var(--accent-blue); font-weight: 600;">Exercise</th>
+                                    <th style="padding: 1rem; color: var(--accent-blue); font-weight: 600;">Sets</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                (log.exercises || []).forEach(e => {
+                    const setsString = (e.sets || []).map((s, i) =>
+                        `<div style="margin-bottom: 0.25rem;">
+                            <span style="color:rgba(255,255,255,0.5); font-size: 0.85em; margin-right: 0.5rem;">Set ${i + 1}:</span>
+                            <strong>${s.reps != null ? s.reps : '–'}</strong> reps ${s.load != null ? '@ <strong>' + s.load + '</strong> lb' : ''}
+                        </div>`
+                    ).join('');
+
+                    tableHTML += `
+                                <tr style="border-bottom: 1px solid var(--gray-border);">
+                                    <td style="padding: 1rem; vertical-align: top;">
+                                        <strong><a href="#" onclick="openExerciseDetail(${e.exercise_id}); return false;">${e.exercise_name}</a></strong>
+                                    </td>
+                                    <td style="padding: 1rem; vertical-align: top;">
+                                        ${setsString}
+                                    </td>
+                                </tr>
+                    `;
+                });
+
+                tableHTML += `
+                            </tbody>
+                        </table>
                     </div>
                 `;
+                pane.innerHTML = tableHTML;
             } catch (e) { }
+        }
+
+        async function deleteWorkoutLog(id) {
+            if (!confirm('Are you sure you want to permanently delete this workout? This cannot be undone.')) return;
+            try {
+                const res = await fetch(API_URL + '/workout-logs/' + id, {
+                    method: 'DELETE',
+                    headers: authHeaders()
+                });
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('historyDetailPane').style.display = 'none';
+                    loadHistory();
+                } else {
+                    alert(data.message || 'Failed to delete workout');
+                }
+            } catch (e) {
+                console.error("Delete Workout Error:", e);
+                alert('Request failed: ' + e.message);
+            }
         }
 
         // Exercise detail modal (history + alternatives)
