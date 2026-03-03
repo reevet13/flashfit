@@ -184,20 +184,104 @@ function seedExercises() {
   stmt.finalize();
 }
 
-// Seed 3 preloaded programs with placeholder sessions/exercises
+// Helper to get exercises by name
+function getExerciseIds(names, callback) {
+  const placeholders = names.map(() => '?').join(',');
+  db.all(`SELECT id, name FROM exercises WHERE name IN (${placeholders})`, names, (err, rows) => {
+    if (err) return callback(err, null);
+    const map = {};
+    rows.forEach(r => map[r.name] = r.id);
+    callback(null, map);
+  });
+}
+
+// Seed 3 preloaded programs
 function seedPreloadedPrograms() {
   db.get('SELECT COUNT(*) as c FROM workout_programs WHERE is_preloaded = 1', [], (err, row) => {
     if (err || (row && row.c > 0)) return;
 
-    const programs = [
-      { name: 'Full Body Beginner', description: 'Three days per week, full body each session.', sessions: ['Day A', 'Day B', 'Day C'] },
-      { name: 'Push / Pull / Legs', description: 'Classic PPL split, 6 days per week.', sessions: ['Push', 'Pull', 'Legs'] },
-      { name: 'Upper / Lower', description: 'Four days per week, upper and lower split.', sessions: ['Upper', 'Lower'] },
+    // The required exercises for all programs combined
+    const requiredExercises = [
+      'Barbell Back Squat', 'Barbell Bench Press', 'Deadlift', 'Overhead Press', // Powerlifting
+      'Push-ups', 'Incline Dumbbell Press', 'Lateral Raise', 'Triceps Pushdown', // Hyper - Push
+      'Barbell Row', 'Pull-ups', 'Barbell Curl', 'Lat Pulldown', // Hyper - Pull
+      'Leg Press', 'Romanian Deadlift', 'Leg Extension', 'Calf Raise', // Hyper - Legs
+      'Dumbbell Bench Press', 'Lat Pulldown', 'Leg Press', 'Dumbbell Shoulder Press' // Gen Fit
     ];
 
-    db.all('SELECT id FROM exercises ORDER BY id', [], (err, exRows) => {
-      if (err || !exRows.length) return;
-      const eIds = exRows.map(r => r.id);
+    getExerciseIds(requiredExercises, (err, exMap) => {
+      if (err || !exMap) return;
+
+      const programs = [
+        {
+          name: 'Powerlifting',
+          description: 'Focus on heavy compound movements. 5 sets of 5 reps.',
+          sessions: [
+            {
+              name: 'Day 1: Squat & Bench',
+              exercises: [
+                { id: exMap['Barbell Back Squat'], sets: 5, reps: 5 },
+                { id: exMap['Barbell Bench Press'], sets: 5, reps: 5 }
+              ]
+            },
+            {
+              name: 'Day 2: Deadlift & Press',
+              exercises: [
+                { id: exMap['Deadlift'], sets: 5, reps: 5 },
+                { id: exMap['Overhead Press'], sets: 5, reps: 5 }
+              ]
+            }
+          ]
+        },
+        {
+          name: 'Hypertrophy',
+          description: 'Muscle growth focus with higher volume. Classic PPL split.',
+          sessions: [
+            {
+              name: 'Push Day',
+              exercises: [
+                { id: exMap['Incline Dumbbell Press'], sets: 4, reps: 10 },
+                { id: exMap['Push-ups'], sets: 3, reps: 15 },
+                { id: exMap['Lateral Raise'], sets: 4, reps: 12 },
+                { id: exMap['Triceps Pushdown'], sets: 3, reps: 12 }
+              ]
+            },
+            {
+              name: 'Pull Day',
+              exercises: [
+                { id: exMap['Pull-ups'], sets: 3, reps: 8 },
+                { id: exMap['Barbell Row'], sets: 4, reps: 10 },
+                { id: exMap['Lat Pulldown'], sets: 3, reps: 12 },
+                { id: exMap['Barbell Curl'], sets: 4, reps: 12 }
+              ]
+            },
+            {
+              name: 'Leg Day',
+              exercises: [
+                { id: exMap['Leg Press'], sets: 4, reps: 10 },
+                { id: exMap['Romanian Deadlift'], sets: 3, reps: 10 },
+                { id: exMap['Leg Extension'], sets: 3, reps: 15 },
+                { id: exMap['Calf Raise'], sets: 4, reps: 15 }
+              ]
+            }
+          ]
+        },
+        {
+          name: 'General Fitness',
+          description: 'Simple, approachable full-body routine.',
+          sessions: [
+            {
+              name: 'Full Body A',
+              exercises: [
+                { id: exMap['Dumbbell Bench Press'], sets: 3, reps: 10 },
+                { id: exMap['Lat Pulldown'], sets: 3, reps: 10 },
+                { id: exMap['Leg Press'], sets: 3, reps: 12 },
+                { id: exMap['Dumbbell Shoulder Press'], sets: 3, reps: 10 }
+              ]
+            }
+          ]
+        }
+      ];
 
       let progIndex = 0;
       function insertNextProgram() {
@@ -205,7 +289,7 @@ function seedPreloadedPrograms() {
         const p = programs[progIndex];
         db.run(
           'INSERT INTO workout_programs (name, description, user_id, is_preloaded) VALUES (?, ?, NULL, 1)',
-          [p.name, p.description || ''],
+          [p.name, p.description],
           function (insErr) {
             if (insErr) return;
             const programId = this.lastID;
@@ -215,21 +299,35 @@ function seedPreloadedPrograms() {
                 progIndex++;
                 return insertNextProgram();
               }
+              const session = p.sessions[sessIndex];
               db.run(
                 'INSERT INTO program_sessions (program_id, name, sort_order) VALUES (?, ?, ?)',
-                [programId, p.sessions[sessIndex], sessIndex],
+                [programId, session.name, sessIndex],
                 function (sErr) {
                   if (sErr) { sessIndex++; return insertNextSession(); }
                   const sessionId = this.lastID;
-                  const n = 4;
-                  for (let o = 0; o < n; o++) {
+                  
+                  let exIndex = 0;
+                  function insertNextExercise() {
+                    if (exIndex >= session.exercises.length) {
+                      sessIndex++;
+                      return insertNextSession();
+                    }
+                    const ex = session.exercises[exIndex];
+                    if (!ex.id) {
+                      exIndex++;
+                      return insertNextExercise(); // Skip if not found
+                    }
                     db.run(
-                      'INSERT INTO program_session_exercises (program_session_id, exercise_id, default_sets, default_reps, sort_order) VALUES (?, ?, 3, 10, ?)',
-                      [sessionId, eIds[(sessIndex * 2 + o) % eIds.length], o]
+                      'INSERT INTO program_session_exercises (program_session_id, exercise_id, default_sets, default_reps, sort_order) VALUES (?, ?, ?, ?, ?)',
+                      [sessionId, ex.id, ex.sets, ex.reps, exIndex],
+                      function() {
+                        exIndex++;
+                        insertNextExercise();
+                      }
                     );
                   }
-                  sessIndex++;
-                  insertNextSession();
+                  insertNextExercise();
                 }
               );
             }
