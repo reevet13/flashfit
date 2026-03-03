@@ -1026,6 +1026,46 @@
         #exerciseDetailModal .modal-content {
             max-width: 560px;
         }
+
+        .autocomplete-container {
+            position: relative;
+            width: 100%;
+        }
+
+        .autocomplete-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--gray-dark);
+            border: 1px solid var(--gray-border);
+            border-radius: 8px;
+            margin-top: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .autocomplete-dropdown.active {
+            display: block;
+        }
+
+        .autocomplete-item {
+            padding: 0.8rem 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: background 0.2s;
+        }
+
+        .autocomplete-item:last-child {
+            border-bottom: none;
+        }
+
+        .autocomplete-item:hover {
+            background: var(--accent-blue);
+        }
     </style>
 </head>
 
@@ -1164,14 +1204,23 @@
         </div>
     </div>
 
-    <!-- Swap Exercise Modal -->
-    <div id="swapExerciseModal" class="modal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeSwapExerciseModal()">&times;</button>
-            <h2 class="modal-title" id="swapExerciseTitle">Swap Exercise</h2>
-            <p style="text-align:center; color:rgba(245,245,245,0.7); margin-bottom:1rem;">Select an alternative
-                exercise to replace this one in your program.</p>
-            <div id="swapAlternativesList" class="alternatives-list"></div>
+
+
+    <!-- Custom Prompt Modal -->
+    <div id="customPromptModal" class="modal">
+        <div class="modal-content" style="max-width: 450px; padding: 2.5rem;">
+            <button class="modal-close" onclick="closeCustomPromptModal()">&times;</button>
+            <h2 class="modal-title" id="customPromptTitle" style="font-size: 2rem; margin-bottom: 1.5rem;">Prompt</h2>
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label id="customPromptLabel" for="customPromptInput">Input</label>
+                <div class="autocomplete-container">
+                    <input type="text" id="customPromptInput" style="margin-top: 0.5rem;" autocomplete="off"
+                        onkeypress="if(event.key === 'Enter') submitCustomPrompt()">
+                    <div id="customPromptAutocomplete" class="autocomplete-dropdown"></div>
+                </div>
+            </div>
+            <button type="button" class="btn-primary" onclick="submitCustomPrompt()"
+                style="padding: 1rem; border-radius: 12px; font-size: 1.1rem; width: 100%;">Confirm</button>
         </div>
     </div>
 
@@ -1578,6 +1627,91 @@
             }
         });
 
+        // Custom Prompt Modal logic
+        let currentPromptCallback = null;
+        let currentAutocompleteData = [];
+
+        function showCustomPromptModal(title, label, defaultValue, callback, autocompleteData = []) {
+            document.getElementById('customPromptTitle').textContent = title;
+            document.getElementById('customPromptLabel').textContent = label;
+            const inputEl = document.getElementById('customPromptInput');
+            inputEl.value = defaultValue || '';
+            currentPromptCallback = callback;
+            currentAutocompleteData = autocompleteData;
+            document.getElementById('customPromptAutocomplete').classList.remove('active');
+
+            document.getElementById('customPromptModal').classList.add('active');
+            setTimeout(() => inputEl.focus(), 100);
+        }
+
+        function closeCustomPromptModal() {
+            document.getElementById('customPromptModal').classList.remove('active');
+            document.getElementById('customPromptAutocomplete').classList.remove('active');
+            if (currentPromptCallback) currentPromptCallback(null);
+            currentPromptCallback = null;
+        }
+
+        function submitCustomPrompt() {
+            const val = document.getElementById('customPromptInput').value;
+            document.getElementById('customPromptModal').classList.remove('active');
+            document.getElementById('customPromptAutocomplete').classList.remove('active');
+            if (currentPromptCallback) {
+                const cb = currentPromptCallback;
+                currentPromptCallback = null;
+                cb(val);
+            }
+        }
+
+        document.getElementById('customPromptInput').addEventListener('input', function () {
+            renderAutocomplete(this.value);
+        });
+
+        document.getElementById('customPromptInput').addEventListener('focus', function () {
+            renderAutocomplete(this.value);
+        });
+
+        function renderAutocomplete(text) {
+            const dropdown = document.getElementById('customPromptAutocomplete');
+            if (!currentAutocompleteData || currentAutocompleteData.length === 0) {
+                dropdown.classList.remove('active');
+                return;
+            }
+
+            const filterText = (text || '').toLowerCase().trim();
+
+            // Only show suggestions if the user has typed something
+            if (!filterText) {
+                dropdown.classList.remove('active');
+                return;
+            }
+
+            const matches = currentAutocompleteData.filter(item => item.toLowerCase().includes(filterText));
+
+            if (matches.length === 0) {
+                dropdown.classList.remove('active');
+                return;
+            }
+
+            // Cap at top 100 matches to keep UI clean, but don't overwhelm DOM
+            const topMatches = matches.slice(0, 50);
+
+            dropdown.innerHTML = topMatches.map(m => `<div class="autocomplete-item" onclick="selectAutocomplete('${m.replace(/'/g, "\\'")}')">${m}</div>`).join('');
+            dropdown.classList.add('active');
+        }
+
+        function selectAutocomplete(val) {
+            document.getElementById('customPromptInput').value = val;
+            document.getElementById('customPromptAutocomplete').classList.remove('active');
+            document.getElementById('customPromptInput').focus();
+        }
+
+        document.getElementById('customPromptModal').addEventListener('click', (e) => {
+            if (e.target.id === 'customPromptModal') closeCustomPromptModal();
+            else if (!e.target.closest('.autocomplete-container')) {
+                document.getElementById('customPromptAutocomplete').classList.remove('active');
+            }
+        });
+
         // --- Dashboard / App (workout tracking) ---
         function getToken() {
             return localStorage.getItem('flashfit_token');
@@ -1695,44 +1829,50 @@
             }
         }
 
-        async function createNewProgram() {
-            try {
-                const res = await fetch(API_URL + '/programs', {
-                    method: 'POST',
-                    headers: authHeaders(),
-                    body: JSON.stringify({ name: 'My Program', description: '' })
-                });
-                const data = await res.json();
-                if (!data.success) { alert(data.message || 'Create failed'); return; }
-                loadPrograms();
-                if (data.program && data.program.id) selectProgram(data.program.id);
-            } catch (e) {
-                alert('Request failed');
-            }
+        function createNewProgram() {
+            showCustomPromptModal('New Program', 'Program Name', 'My Program', async (name) => {
+                if (!name || name.trim() === '') return;
+                try {
+                    const res = await fetch(API_URL + '/programs', {
+                        method: 'POST',
+                        headers: authHeaders(),
+                        body: JSON.stringify({ name: name.trim(), description: '' })
+                    });
+                    const data = await res.json();
+                    if (!data.success) { alert(data.message || 'Create failed'); return; }
+                    loadPrograms();
+                    if (data.program && data.program.id) selectProgram(data.program.id);
+                } catch (e) {
+                    alert('Request failed');
+                }
+            });
         }
 
         function updateProgramName() {
-            const name = prompt('Program name', programsCache.find(p => p.id === currentProgramId)?.name);
-            if (name == null) return;
-            fetch(API_URL + '/programs/' + currentProgramId, {
-                method: 'PUT',
-                headers: authHeaders(),
-                body: JSON.stringify({ name, description: programsCache.find(p => p.id === currentProgramId)?.description })
-            }).then(r => r.json()).then(data => { if (data.success) loadPrograms(); selectProgram(currentProgramId); }).catch(() => { });
+            const currentName = programsCache.find(p => p.id === currentProgramId)?.name || '';
+            showCustomPromptModal('Edit Program', 'Program Name', currentName, (name) => {
+                if (name == null || name.trim() === '') return;
+                fetch(API_URL + '/programs/' + currentProgramId, {
+                    method: 'PUT',
+                    headers: authHeaders(),
+                    body: JSON.stringify({ name: name.trim(), description: programsCache.find(p => p.id === currentProgramId)?.description })
+                }).then(r => r.json()).then(data => { if (data.success) loadPrograms(); selectProgram(currentProgramId); }).catch(() => { });
+            });
         }
 
-        async function addSession(programId) {
-            const name = prompt('Session name', 'New Session');
-            if (!name) return;
-            try {
-                const res = await fetch(API_URL + '/programs/' + programId + '/sessions', {
-                    method: 'POST',
-                    headers: authHeaders(),
-                    body: JSON.stringify({ name })
-                });
-                const data = await res.json();
-                if (data.success) selectProgram(programId);
-            } catch (e) { }
+        function addSession(programId) {
+            showCustomPromptModal('Add Session', 'Session name', 'New Session', async (name) => {
+                if (!name || name.trim() === '') return;
+                try {
+                    const res = await fetch(API_URL + '/programs/' + programId + '/sessions', {
+                        method: 'POST',
+                        headers: authHeaders(),
+                        body: JSON.stringify({ name: name.trim() })
+                    });
+                    const data = await res.json();
+                    if (data.success) selectProgram(programId);
+                } catch (e) { }
+            });
         }
 
         async function removeSession(programId, sessionId) {
@@ -1770,20 +1910,22 @@
                 const data = await res.json();
                 exerciseListCache = data.exercises || [];
             }
-            const name = prompt('Exercise name (or choose from list later)', '');
-            if (name == null) return;
-            const ex = exerciseListCache.find(e => e.name.toLowerCase() === name.toLowerCase()) || exerciseListCache.find(e => e.name.toLowerCase().includes(name.toLowerCase()));
-            const exercise_id = ex ? ex.id : (exerciseListCache[0] && exerciseListCache[0].id);
-            if (!exercise_id) { alert('No exercises in database'); return; }
-            try {
-                const res = await fetch(API_URL + '/programs/' + programId + '/sessions/' + sessionId + '/exercises', {
-                    method: 'POST',
-                    headers: authHeaders(),
-                    body: JSON.stringify({ exercise_id, default_sets: 3, default_reps: 10 })
-                });
-                const data = await res.json();
-                if (data.success) selectProgram(programId);
-            } catch (e) { }
+            const exerciseNames = exerciseListCache.map(e => e.name);
+            showCustomPromptModal('Add Exercise', 'Exercise name (or choose from list later)', '', async (name) => {
+                if (name == null) return;
+                const ex = exerciseListCache.find(e => e.name.toLowerCase() === name.toLowerCase()) || exerciseListCache.find(e => e.name.toLowerCase().includes(name.toLowerCase()));
+                if (!ex) { alert('Exercise not found in database.'); return; }
+                const exercise_id = ex.id;
+                try {
+                    const res = await fetch(API_URL + '/programs/' + programId + '/sessions/' + sessionId + '/exercises', {
+                        method: 'POST',
+                        headers: authHeaders(),
+                        body: JSON.stringify({ exercise_id, default_sets: 3, default_reps: 10 })
+                    });
+                    const data = await res.json();
+                    if (data.success) selectProgram(programId);
+                } catch (e) { }
+            }, exerciseNames);
         }
 
         // Log workout
@@ -1863,12 +2005,16 @@
                     const exData = await exRes.json();
                     const exercises = exData.exercises || [];
                     if (exercises.length) {
-                        const add = prompt('Add exercise by name (first match)', '');
-                        const ex = exercises.find(e => e.name.toLowerCase().includes((add || '').toLowerCase())) || exercises[0];
-                        logExercises = [{ exercise_id: ex.id, exercise_name: ex.name, default_sets: 3, default_reps: 10, sets: [{ set_index: 0, reps: null, load: null }, { set_index: 1, reps: null, load: null }, { set_index: 2, reps: null, load: null }] }];
-                        renderLogExercises();
-                        document.getElementById('logSaveArea').style.display = 'block';
-                        document.getElementById('logAddExerciseBtn').style.display = 'inline-block';
+                        const exerciseNames = exercises.map(e => e.name);
+                        showCustomPromptModal('Add Exercise', 'Add exercise by name (first match)', '', (add) => {
+                            if (add == null) return;
+                            const ex = exercises.find(e => e.name.toLowerCase().includes((add || '').toLowerCase()));
+                            if (!ex) { alert('Exercise not found in database.'); return; }
+                            logExercises = [{ exercise_id: ex.id, exercise_name: ex.name, default_sets: 3, default_reps: 10, sets: [{ set_index: 0, reps: null, load: null }, { set_index: 1, reps: null, load: null }, { set_index: 2, reps: null, load: null }] }];
+                            renderLogExercises();
+                            document.getElementById('logSaveArea').style.display = 'block';
+                            document.getElementById('logAddExerciseBtn').style.display = 'inline-block';
+                        }, exerciseNames);
                     }
                 } catch (e) { }
             }
@@ -1880,11 +2026,15 @@
                 const data = await res.json();
                 exerciseListCache = data.exercises || [];
             }
-            const add = prompt('Exercise name (partial match)', '');
-            const ex = exerciseListCache.find(e => e.name.toLowerCase().includes((add || '').toLowerCase())) || exerciseListCache[0];
-            if (!ex) return;
-            logExercises.push({ exercise_id: ex.id, exercise_name: ex.name, default_sets: 3, default_reps: 10, sets: [{ set_index: 0, reps: null, load: null }, { set_index: 1, reps: null, load: null }, { set_index: 2, reps: null, load: null }] });
-            renderLogExercises();
+            const exerciseNames = exerciseListCache.map(e => e.name);
+            showCustomPromptModal('Add Exercise', 'Exercise name (partial match)', '', (add) => {
+                if (add == null) return;
+                const ex = exerciseListCache.find(e => e.name.toLowerCase().includes((add || '').toLowerCase()));
+                if (!ex) { alert('Exercise not found in database.'); return; }
+                if (!ex) return;
+                logExercises.push({ exercise_id: ex.id, exercise_name: ex.name, default_sets: 3, default_reps: 10, sets: [{ set_index: 0, reps: null, load: null }, { set_index: 1, reps: null, load: null }, { set_index: 2, reps: null, load: null }] });
+                renderLogExercises();
+            }, exerciseNames);
         }
 
         function renderLogExercises() {
@@ -2052,43 +2202,34 @@
 
         async function openSwapExerciseModal(programId, sessionId, pseId, exerciseId) {
             swapContext = { programId, sessionId, pseId };
-            const token = getToken();
-            if (!token) return;
-            try {
-                const altRes = await fetch(API_URL + '/exercises/' + exerciseId + '/alternatives', { headers: authHeaders() });
-                const altData = await altRes.json();
 
-                const altBlock = document.getElementById('swapAlternativesList');
-                const alts = altData.alternatives || [];
+            if (exerciseListCache.length === 0) {
+                try {
+                    const res = await fetch(API_URL + '/exercises');
+                    const data = await res.json();
+                    exerciseListCache = data.exercises || [];
+                } catch (e) {
+                    console.error("Failed to load exercises for swap", e);
+                }
+            }
 
-                if (alts.length) {
-                    altBlock.innerHTML = alts.map(a => `
-                        <div class="alt-item" style="display:flex; justify-content:space-between; align-items:center;">
-                            <div>
-                                <strong>${a.name}</strong><br>
-                                ${a.last_load != null ? `<span class="last-load" style="font-size:0.8rem;">Last: ${a.last_reps != null ? a.last_reps + ' reps ' : ''}@ ${a.last_load} lb</span>` : '<span style="font-size:0.8rem;color:rgba(255,255,255,0.4)">(no history)</span>'}
-                            </div>
-                            <button type="button" class="btn-sm primary" onclick="commitSwapExercise(${a.id})">Select</button>
-                        </div>
-                    `).join('');
-                } else {
-                    altBlock.innerHTML = '<p style="color:rgba(245,245,245,0.6); text-align:center;">No direct alternatives found. You can remove the exercise and add a new one manually.</p>';
+            const exerciseNames = exerciseListCache.map(e => e.name);
+            showCustomPromptModal('Swap Exercise', 'Search for a replacement exercise', '', async (name) => {
+                if (name == null) {
+                    swapContext = null;
+                    return;
                 }
 
-                document.getElementById('swapExerciseModal').classList.add('active');
-            } catch (e) {
-                console.error(e);
-            }
-        }
+                const ex = exerciseListCache.find(e => e.name.toLowerCase() === name.toLowerCase()) || exerciseListCache.find(e => e.name.toLowerCase().includes(name.toLowerCase()));
+                if (!ex) {
+                    alert('Exercise not found in database.');
+                    swapContext = null;
+                    return;
+                }
 
-        function closeSwapExerciseModal() {
-            document.getElementById('swapExerciseModal').classList.remove('active');
-            swapContext = null;
+                commitSwapExercise(ex.id);
+            }, exerciseNames);
         }
-
-        document.getElementById('swapExerciseModal').addEventListener('click', (e) => {
-            if (e.target.id === 'swapExerciseModal') closeSwapExerciseModal();
-        });
 
         async function commitSwapExercise(newExerciseId) {
             if (!swapContext) return;
@@ -2102,13 +2243,14 @@
                 });
                 const data = await res.json();
                 if (data.success) {
-                    closeSwapExerciseModal();
+                    swapContext = null;
                     selectProgram(programId); // Refresh program detail view
                 } else {
                     alert(data.message || 'Failed to swap exercise');
                 }
             } catch (e) {
-                alert('Request failed');
+                console.error("Swap Error:", e);
+                alert('Request failed: ' + e.message);
             }
         }
     </script>
