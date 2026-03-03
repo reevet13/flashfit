@@ -306,7 +306,7 @@ function seedPreloadedPrograms() {
                 function (sErr) {
                   if (sErr) { sessIndex++; return insertNextSession(); }
                   const sessionId = this.lastID;
-                  
+
                   let exIndex = 0;
                   function insertNextExercise() {
                     if (exIndex >= session.exercises.length) {
@@ -321,7 +321,7 @@ function seedPreloadedPrograms() {
                     db.run(
                       'INSERT INTO program_session_exercises (program_session_id, exercise_id, default_sets, default_reps, sort_order) VALUES (?, ?, ?, ?, ?)',
                       [sessionId, ex.id, ex.sets, ex.reps, exIndex],
-                      function() {
+                      function () {
                         exIndex++;
                         insertNextExercise();
                       }

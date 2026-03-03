@@ -967,6 +967,16 @@
             border: none;
         }
 
+        .btn-delete {
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+
+        .btn-delete:hover {
+            background: #ef4444;
+            color: var(--white);
+        }
+
         .inline-actions {
             display: flex;
             gap: 0.5rem;
@@ -1159,8 +1169,6 @@
             <button class="modal-close" onclick="closeExerciseDetail()">&times;</button>
             <h2 class="modal-title" id="exerciseDetailTitle">Exercise</h2>
             <div id="exerciseHistoryBlock"></div>
-            <h3 style="margin-top: 1.5rem; color: var(--accent-blue);">Recommended alternatives</h3>
-            <div id="exerciseAlternativesBlock" class="alternatives-list"></div>
         </div>
     </div>
 
@@ -1894,14 +1902,15 @@
                 const card = document.createElement('div');
                 card.className = 'card';
                 let setsHtml = (ex.sets || []).map((s, i) => `
-                    <div class="set-row">
-                        <span>Set ${i + 1}</span>
-                        <input type="number" placeholder="Reps" value="${s.reps != null ? s.reps : ''}" onchange="logExercises[${exIdx}].sets[${i}].reps = this.value ? parseInt(this.value,10) : null">
-                        <input type="number" step="0.5" placeholder="Load (lb)" value="${s.load != null ? s.load : ''}" onchange="logExercises[${exIdx}].sets[${i}].load = this.value ? parseFloat(this.value) : null">
+                    <div class="set-row" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                        <span style="min-width: 40px;">Set ${i + 1}</span>
+                        <input type="number" placeholder="Reps" value="${s.reps != null ? s.reps : ''}" onchange="logExercises[${exIdx}].sets[${i}].reps = this.value ? parseInt(this.value,10) : null" style="flex: 1; padding: 0.5rem;">
+                        <input type="number" step="0.5" placeholder="Load (lb)" value="${s.load != null ? s.load : ''}" onchange="logExercises[${exIdx}].sets[${i}].load = this.value ? parseFloat(this.value) : null" style="flex: 1; padding: 0.5rem;">
+                        <button type="button" class="btn-sm btn-delete" onclick="removeLogSet(${exIdx}, ${i})" style="padding: 0.5rem; min-width: 40px;" title="Remove set">✕</button>
                     </div>
                 `).join('');
                 card.innerHTML = `
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem;">
                         <strong><a href="#" onclick="openExerciseDetail(${ex.exercise_id}); return false;">${ex.exercise_name}</a></strong>
                         <button type="button" class="btn-sm" onclick="addLogSet(${exIdx})">+ Set</button>
                     </div>
@@ -1916,6 +1925,16 @@
             if (!ex.sets) ex.sets = [];
             ex.sets.push({ set_index: ex.sets.length, reps: null, load: null });
             renderLogExercises();
+        }
+
+        function removeLogSet(exIdx, setIdx) {
+            const ex = logExercises[exIdx];
+            if (ex && ex.sets && ex.sets.length > setIdx) {
+                ex.sets.splice(setIdx, 1);
+                // Re-index remaining sets
+                ex.sets.forEach((s, idx) => { s.set_index = idx; });
+                renderLogExercises();
+            }
         }
 
         async function saveWorkoutLog() {
@@ -2010,29 +2029,61 @@
             const token = getToken();
             if (!token) return;
             try {
-                const [histRes, altRes] = await Promise.all([
-                    fetch(API_URL + '/exercises/' + exerciseId + '/history', { headers: authHeaders() }),
-                    fetch(API_URL + '/exercises/' + exerciseId + '/alternatives', { headers: authHeaders() })
-                ]);
+                const histRes = await fetch(API_URL + '/exercises/' + exerciseId + '/history', { headers: authHeaders() });
                 const histData = await histRes.json();
-                const altData = await altRes.json();
+
                 const exNameRes = await fetch(API_URL + '/exercises');
                 const exNameData = await exNameRes.json();
                 const ex = (exNameData.exercises || []).find(e => e.id == exerciseId);
+
                 currentExerciseName = ex ? ex.name : 'Exercise';
                 document.getElementById('exerciseDetailTitle').textContent = currentExerciseName;
+
                 const historyBlock = document.getElementById('exerciseHistoryBlock');
                 const history = histData.history || [];
-                historyBlock.innerHTML = history.length
-                    ? '<h4 style="color:var(--accent-blue);">Your history</h4><ul class="history-list">' + history.map(h => `
-                        <li><span class="date">${h.workout_date}</span> ${h.session_name}: ${(h.sets || []).map(s => `${s.reps != null ? s.reps : '–'} reps ${s.load != null ? '@ ' + s.load + ' lb' : ''}`).join(', ')}</li>
-                    `).join('') + '</ul>'
-                    : '<p style="color:rgba(245,245,245,0.6);">No history for this exercise yet.</p>';
-                const altBlock = document.getElementById('exerciseAlternativesBlock');
-                const alts = altData.alternatives || [];
-                altBlock.innerHTML = alts.length
-                    ? alts.map(a => `<div class="alt-item"><strong>${a.name}</strong> ${a.last_load != null ? `<span class="last-load">Last: ${a.last_reps != null ? a.last_reps + ' reps ' : ''}@ ${a.last_load} lb</span>` : '(no history)'}</div>`).join('')
-                    : '<p style="color:rgba(245,245,245,0.6);">No alternatives in the same muscle group.</p>';
+
+                if (history.length) {
+                    let tableHTML = `
+                        <h4 style="color:var(--accent-blue); margin-bottom: 1rem;">Your history</h4>
+                        <div style="overflow-x: auto;">
+                            <table class="history-table" style="width: 100%; border-collapse: collapse; text-align: left; background: rgba(255, 255, 255, 0.05); border-radius: 10px; overflow: hidden;">
+                                <thead>
+                                    <tr style="background: rgba(59, 130, 246, 0.2); border-bottom: 2px solid var(--accent-blue);">
+                                        <th style="padding: 1rem; color: var(--off-white); font-weight: 600;">Date</th>
+                                        <th style="padding: 1rem; color: var(--off-white); font-weight: 600;">Session</th>
+                                        <th style="padding: 1rem; color: var(--off-white); font-weight: 600;">Sets</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+
+                    history.forEach(h => {
+                        const setsString = (h.sets || []).map((s, i) =>
+                            `<div style="margin-bottom: 0.25rem;">
+                                <span style="color:rgba(255,255,255,0.6); font-size: 0.85em; margin-right: 0.5rem;">Set ${i + 1}:</span>
+                                <strong>${s.reps != null ? s.reps : '–'}</strong> reps ${s.load != null ? '@ <strong>' + s.load + '</strong> lb' : ''}
+                            </div>`
+                        ).join('');
+
+                        tableHTML += `
+                            <tr style="border-bottom: 1px solid var(--gray-border); transition: background 0.2s ease;">
+                                <td style="padding: 1rem; color: var(--accent-blue); font-weight: 500; white-space: nowrap;">${h.workout_date}</td>
+                                <td style="padding: 1rem;">${h.session_name}</td>
+                                <td style="padding: 1rem;">${setsString}</td>
+                            </tr>
+                        `;
+                    });
+
+                    tableHTML += `
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                    historyBlock.innerHTML = tableHTML;
+                } else {
+                    historyBlock.innerHTML = '<p style="color:rgba(245,245,245,0.6);">No history for this exercise yet.</p>';
+                }
+
                 document.getElementById('exerciseDetailModal').classList.add('active');
             } catch (e) {
                 console.error(e);
