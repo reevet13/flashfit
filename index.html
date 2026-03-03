@@ -1232,6 +1232,22 @@
         </div>
     </div>
 
+    <!-- Custom Confirm Modal -->
+    <div id="customConfirmModal" class="modal">
+        <div class="modal-content" style="max-width: 450px; padding: 2.5rem; text-align: center;">
+            <h2 class="modal-title" id="customConfirmTitle"
+                style="font-size: 2rem; margin-bottom: 1rem; color: #ef4444;">Are you sure?</h2>
+            <p id="customConfirmMessage" style="color: rgba(245,245,245,0.8); margin-bottom: 2rem; font-size: 1.1rem;">
+                This action cannot be undone.</p>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <button type="button" class="btn-sm" onclick="submitCustomConfirm(false)"
+                    style="flex: 1; padding: 0.8rem; font-size: 1rem;">Cancel</button>
+                <button type="button" class="btn-sm btn-delete" onclick="submitCustomConfirm(true)"
+                    style="flex: 1; padding: 0.8rem; font-size: 1rem; border-radius: 25px;">Delete</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Hero Section -->
     <section class="hero">
         <div class="logo-container">
@@ -1720,6 +1736,35 @@
             }
         });
 
+        // Custom Confirm Modal logic
+        let currentConfirmCallback = null;
+
+        function showCustomConfirmModal(title, message, callback) {
+            document.getElementById('customConfirmTitle').textContent = title;
+            document.getElementById('customConfirmMessage').textContent = message;
+            currentConfirmCallback = callback;
+            document.getElementById('customConfirmModal').classList.add('active');
+        }
+
+        function closeCustomConfirmModal() {
+            document.getElementById('customConfirmModal').classList.remove('active');
+            if (currentConfirmCallback) currentConfirmCallback(false);
+            currentConfirmCallback = null;
+        }
+
+        function submitCustomConfirm(result) {
+            document.getElementById('customConfirmModal').classList.remove('active');
+            if (currentConfirmCallback) {
+                const cb = currentConfirmCallback;
+                currentConfirmCallback = null;
+                cb(result);
+            }
+        }
+
+        document.getElementById('customConfirmModal').addEventListener('click', (e) => {
+            if (e.target.id === 'customConfirmModal') closeCustomConfirmModal();
+        });
+
         // --- Dashboard / App (workout tracking) ---
         function getToken() {
             return localStorage.getItem('flashfit_token');
@@ -1779,10 +1824,19 @@
             const isPreloaded = program.is_preloaded;
             const isMine = !isPreloaded && program.user_id;
             pane.innerHTML = `
-                <h3>${program.name}</h3>
-                ${program.description ? `<p style="color:rgba(245,245,245,0.7); margin-bottom:1rem;">${program.description}</p>` : ''}
-                ${isPreloaded ? `<button type="button" class="btn-sm primary" onclick="copyProgram(${program.id})">Copy to my programs</button>` : ''}
-                ${isMine ? `<button type="button" class="btn-sm" onclick="updateProgramName()">Edit name</button>` : ''}
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div style="flex: 1;">
+                        <h3>${program.name}</h3>
+                        ${program.description ? `<p style="color:rgba(245,245,245,0.7); margin-bottom:1rem;">${program.description}</p>` : ''}
+                    </div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        ${isPreloaded ? `<button type="button" class="btn-sm primary" onclick="copyProgram(${program.id})">Copy to my programs</button>` : ''}
+                        ${isMine ? `
+                            <button type="button" class="btn-sm" onclick="updateProgramName()">Edit name</button>
+                            <button type="button" class="btn-sm btn-delete" onclick="deleteProgram(${program.id})">Delete Program</button>
+                        ` : ''}
+                    </div>
+                </div>
                 <div class="program-detail" style="margin-top:1rem;"></div>
             `;
             const detailDiv = pane.querySelector('.program-detail');
@@ -1868,6 +1922,25 @@
             });
         }
 
+        async function deleteProgram(programId) {
+            showCustomConfirmModal('Delete Program', 'Are you sure you want to permanently delete this program? You will lose all sessions and exercises inside it.', async (confirmed) => {
+                if (!confirmed) return;
+                try {
+                    const res = await fetch(API_URL + '/programs/' + programId, { method: 'DELETE', headers: authHeaders() });
+                    const data = await res.json();
+                    if (data.success) {
+                        currentProgramId = null;
+                        document.getElementById('programDetailPane').innerHTML = '<p style="color: rgba(245,245,245,0.6);">Select a program or create one.</p>';
+                        loadPrograms();
+                    } else {
+                        alert(data.message || 'Failed to delete program');
+                    }
+                } catch (e) {
+                    alert('Request failed');
+                }
+            });
+        }
+
         function addSession(programId) {
             showCustomPromptModal('Add Session', 'Session name', 'New Session', async (name) => {
                 if (!name || name.trim() === '') return;
@@ -1884,12 +1957,14 @@
         }
 
         async function removeSession(programId, sessionId) {
-            if (!confirm('Remove this session?')) return;
-            try {
-                const res = await fetch(API_URL + '/programs/' + programId + '/sessions/' + sessionId, { method: 'DELETE', headers: authHeaders() });
-                const data = await res.json();
-                if (data.success) selectProgram(programId);
-            } catch (e) { }
+            showCustomConfirmModal('Remove Session', 'Are you sure you want to remove this session?', async (confirmed) => {
+                if (!confirmed) return;
+                try {
+                    const res = await fetch(API_URL + '/programs/' + programId + '/sessions/' + sessionId, { method: 'DELETE', headers: authHeaders() });
+                    const data = await res.json();
+                    if (data.success) selectProgram(programId);
+                } catch (e) { }
+            });
         }
 
         async function updatePse(programId, sessionId, pseId, field, value) {
@@ -1904,11 +1979,13 @@
         }
 
         async function removePse(programId, sessionId, pseId) {
-            if (!confirm('Remove this exercise from session?')) return;
-            try {
-                const res = await fetch(API_URL + '/programs/' + programId + '/sessions/' + sessionId + '/exercises/' + pseId, { method: 'DELETE', headers: authHeaders() });
-                if ((await res.json()).success) selectProgram(programId);
-            } catch (e) { }
+            showCustomConfirmModal('Remove Exercise', 'Are you sure you want to remove this exercise from the session?', async (confirmed) => {
+                if (!confirmed) return;
+                try {
+                    const res = await fetch(API_URL + '/programs/' + programId + '/sessions/' + sessionId + '/exercises/' + pseId, { method: 'DELETE', headers: authHeaders() });
+                    if ((await res.json()).success) selectProgram(programId);
+                } catch (e) { }
+            });
         }
 
         let exerciseListCache = [];
