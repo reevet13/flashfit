@@ -149,39 +149,137 @@ const initializeDatabase = () => {
 // Seed canonical exercises (muscle_group, movement_type for alternatives)
 function seedExercises() {
   const exercises = [
+    // Chest
     { name: 'Barbell Bench Press', muscle_group: 'chest', movement_type: 'push', equipment: 'barbell' },
     { name: 'Dumbbell Bench Press', muscle_group: 'chest', movement_type: 'push', equipment: 'dumbbell' },
     { name: 'Push-ups', muscle_group: 'chest', movement_type: 'push', equipment: 'bodyweight' },
     { name: 'Incline Dumbbell Press', muscle_group: 'chest', movement_type: 'push', equipment: 'dumbbell' },
     { name: 'Cable Fly', muscle_group: 'chest', movement_type: 'push', equipment: 'cable' },
-    { name: 'Barbell Back Squat', muscle_group: 'quads', movement_type: 'squat', equipment: 'barbell' },
-    { name: 'Leg Press', muscle_group: 'quads', movement_type: 'squat', equipment: 'machine' },
-    { name: 'Leg Extension', muscle_group: 'quads', movement_type: 'extension', equipment: 'machine' },
-    { name: 'Romanian Deadlift', muscle_group: 'hamstrings', movement_type: 'hinge', equipment: 'barbell' },
-    { name: 'Leg Curl', muscle_group: 'hamstrings', movement_type: 'curl', equipment: 'machine' },
+    { name: 'Incline Barbell Bench Press', muscle_group: 'chest', movement_type: 'push', equipment: 'barbell' },
+    { name: 'Decline Barbell Bench Press', muscle_group: 'chest', movement_type: 'push', equipment: 'barbell' },
+    { name: 'Chest Dip', muscle_group: 'chest', movement_type: 'push', equipment: 'bodyweight' },
+    { name: 'Pec Deck Machine', muscle_group: 'chest', movement_type: 'isolation', equipment: 'machine' },
+    { name: 'Dumbbell Pullover', muscle_group: 'chest', movement_type: 'isolation', equipment: 'dumbbell' },
+    { name: 'Machine Chest Press', muscle_group: 'chest', movement_type: 'push', equipment: 'machine' },
+    { name: 'Low Cable Crossover', muscle_group: 'chest', movement_type: 'push', equipment: 'cable' },
+    { name: 'Floor Press', muscle_group: 'chest', movement_type: 'push', equipment: 'barbell' },
+    { name: 'Spiderman Push-up', muscle_group: 'chest', movement_type: 'push', equipment: 'bodyweight' },
+
+    // Back
+    { name: 'Deadlift', muscle_group: 'back', movement_type: 'hinge', equipment: 'barbell' },
     { name: 'Barbell Row', muscle_group: 'back', movement_type: 'pull', equipment: 'barbell' },
     { name: 'Pull-ups', muscle_group: 'back', movement_type: 'pull', equipment: 'bodyweight' },
     { name: 'Lat Pulldown', muscle_group: 'back', movement_type: 'pull', equipment: 'cable' },
     { name: 'Dumbbell Row', muscle_group: 'back', movement_type: 'pull', equipment: 'dumbbell' },
+    { name: 'Chin-ups', muscle_group: 'back', movement_type: 'pull', equipment: 'bodyweight' },
+    { name: 'T-Bar Row', muscle_group: 'back', movement_type: 'pull', equipment: 'barbell' },
+    { name: 'Seated Cable Row', muscle_group: 'back', movement_type: 'pull', equipment: 'cable' },
+    { name: 'Single-Arm Dumbbell Row', muscle_group: 'back', movement_type: 'pull', equipment: 'dumbbell' },
+    { name: 'Pendlay Row', muscle_group: 'back', movement_type: 'pull', equipment: 'barbell' },
+    { name: 'Straight-Arm Pulldown', muscle_group: 'back', movement_type: 'pull', equipment: 'cable' },
+    { name: 'Machine Row', muscle_group: 'back', movement_type: 'pull', equipment: 'machine' },
+    { name: 'Inverted Row', muscle_group: 'back', movement_type: 'pull', equipment: 'bodyweight' },
+    { name: 'Back Extension', muscle_group: 'back', movement_type: 'hinge', equipment: 'bodyweight' },
+    { name: 'Good Morning', muscle_group: 'back', movement_type: 'hinge', equipment: 'barbell' },
+    { name: 'Meadows Row', muscle_group: 'back', movement_type: 'pull', equipment: 'barbell' },
+    { name: 'Rack Pull', muscle_group: 'back', movement_type: 'hinge', equipment: 'barbell' },
+
+    // Quads / Legs
+    { name: 'Barbell Back Squat', muscle_group: 'quads', movement_type: 'squat', equipment: 'barbell' },
+    { name: 'Leg Press', muscle_group: 'quads', movement_type: 'squat', equipment: 'machine' },
+    { name: 'Leg Extension', muscle_group: 'quads', movement_type: 'extension', equipment: 'machine' },
+    { name: 'Front Squat', muscle_group: 'quads', movement_type: 'squat', equipment: 'barbell' },
+    { name: 'Bulgarian Split Squat', muscle_group: 'quads', movement_type: 'squat', equipment: 'dumbbell' },
+    { name: 'Goblet Squat', muscle_group: 'quads', movement_type: 'squat', equipment: 'dumbbell' },
+    { name: 'Walking Lunge', muscle_group: 'quads', movement_type: 'squat', equipment: 'bodyweight' },
+    { name: 'Reverse Lunge', muscle_group: 'quads', movement_type: 'squat', equipment: 'dumbbell' },
+    { name: 'Hack Squat', muscle_group: 'quads', movement_type: 'squat', equipment: 'machine' },
+    { name: 'Sissy Squat', muscle_group: 'quads', movement_type: 'squat', equipment: 'bodyweight' },
+    { name: 'Step-ups', muscle_group: 'quads', movement_type: 'squat', equipment: 'dumbbell' },
+    { name: 'Trap Bar Deadlift', muscle_group: 'legs', movement_type: 'hinge', equipment: 'special' },
+
+    // Hamstrings & Glutes
+    { name: 'Romanian Deadlift', muscle_group: 'hamstrings', movement_type: 'hinge', equipment: 'barbell' },
+    { name: 'Leg Curl', muscle_group: 'hamstrings', movement_type: 'curl', equipment: 'machine' },
+    { name: 'Sumo Deadlift', muscle_group: 'hamstrings', movement_type: 'hinge', equipment: 'barbell' },
+    { name: 'Stiff-Legged Deadlift', muscle_group: 'hamstrings', movement_type: 'hinge', equipment: 'barbell' },
+    { name: 'Glute Bridge', muscle_group: 'glutes', movement_type: 'hinge', equipment: 'bodyweight' },
+    { name: 'Barbell Hip Thrust', muscle_group: 'glutes', movement_type: 'hinge', equipment: 'barbell' },
+    { name: 'Cable Pull-Through', muscle_group: 'glutes', movement_type: 'hinge', equipment: 'cable' },
+
+    // Calves
+    { name: 'Calf Raise', muscle_group: 'calves', movement_type: 'isolation', equipment: 'machine' },
+    { name: 'Seated Calf Raise', muscle_group: 'calves', movement_type: 'isolation', equipment: 'machine' },
+    { name: 'Standing Dumbbell Calf Raise', muscle_group: 'calves', movement_type: 'isolation', equipment: 'dumbbell' },
+
+    // Shoulders
     { name: 'Overhead Press', muscle_group: 'shoulders', movement_type: 'push', equipment: 'barbell' },
     { name: 'Dumbbell Shoulder Press', muscle_group: 'shoulders', movement_type: 'push', equipment: 'dumbbell' },
     { name: 'Lateral Raise', muscle_group: 'shoulders', movement_type: 'isolation', equipment: 'dumbbell' },
+    { name: 'Arnold Press', muscle_group: 'shoulders', movement_type: 'push', equipment: 'dumbbell' },
+    { name: 'Machine Shoulder Press', muscle_group: 'shoulders', movement_type: 'push', equipment: 'machine' },
+    { name: 'Cable Lateral Raise', muscle_group: 'shoulders', movement_type: 'isolation', equipment: 'cable' },
+    { name: 'Front Raise', muscle_group: 'shoulders', movement_type: 'isolation', equipment: 'dumbbell' },
+    { name: 'Face Pull', muscle_group: 'shoulders', movement_type: 'pull', equipment: 'cable' },
+    { name: 'Reverse Pec Deck', muscle_group: 'shoulders', movement_type: 'isolation', equipment: 'machine' },
+    { name: 'Bent-Over Rear Delt Fly', muscle_group: 'shoulders', movement_type: 'isolation', equipment: 'dumbbell' },
+    { name: 'Upright Row', muscle_group: 'shoulders', movement_type: 'pull', equipment: 'barbell' },
+    { name: 'Shrugs', muscle_group: 'shoulders', movement_type: 'pull', equipment: 'barbell' },
+    { name: 'Dumbbell Shrugs', muscle_group: 'shoulders', movement_type: 'pull', equipment: 'dumbbell' },
+    { name: 'Pike Push-up', muscle_group: 'shoulders', movement_type: 'push', equipment: 'bodyweight' },
+
+    // Biceps
     { name: 'Barbell Curl', muscle_group: 'biceps', movement_type: 'pull', equipment: 'barbell' },
     { name: 'Hammer Curl', muscle_group: 'biceps', movement_type: 'pull', equipment: 'dumbbell' },
+    { name: 'Preacher Curl', muscle_group: 'biceps', movement_type: 'pull', equipment: 'machine' },
+    { name: 'Incline Dumbbell Curl', muscle_group: 'biceps', movement_type: 'pull', equipment: 'dumbbell' },
+    { name: 'Concentration Curl', muscle_group: 'biceps', movement_type: 'pull', equipment: 'dumbbell' },
+    { name: 'Cable Curl', muscle_group: 'biceps', movement_type: 'pull', equipment: 'cable' },
+    { name: 'Spider Curl', muscle_group: 'biceps', movement_type: 'pull', equipment: 'dumbbell' },
+    { name: 'EZ-Bar Curl', muscle_group: 'biceps', movement_type: 'pull', equipment: 'barbell' },
+    { name: 'Reverse Curl', muscle_group: 'biceps', movement_type: 'pull', equipment: 'barbell' },
+
+    // Triceps
     { name: 'Triceps Pushdown', muscle_group: 'triceps', movement_type: 'push', equipment: 'cable' },
     { name: 'Skull Crusher', muscle_group: 'triceps', movement_type: 'push', equipment: 'barbell' },
-    { name: 'Deadlift', muscle_group: 'back', movement_type: 'hinge', equipment: 'barbell' },
-    { name: 'Calf Raise', muscle_group: 'calves', movement_type: 'isolation', equipment: 'machine' },
+    { name: 'Triceps Dip', muscle_group: 'triceps', movement_type: 'push', equipment: 'bodyweight' },
+    { name: 'Overhead Triceps Extension', muscle_group: 'triceps', movement_type: 'push', equipment: 'dumbbell' },
+    { name: 'Close-Grip Bench Press', muscle_group: 'triceps', movement_type: 'push', equipment: 'barbell' },
+    { name: 'Rope Triceps Pushdown', muscle_group: 'triceps', movement_type: 'push', equipment: 'cable' },
+    { name: 'Dumbbell Kickback', muscle_group: 'triceps', movement_type: 'isolation', equipment: 'dumbbell' },
+    { name: 'Machine Triceps Extension', muscle_group: 'triceps', movement_type: 'isolation', equipment: 'machine' },
+
+    // Core & Abs
+    { name: 'Crunch', muscle_group: 'core', movement_type: 'isolation', equipment: 'bodyweight' },
+    { name: 'Plank', muscle_group: 'core', movement_type: 'hold', equipment: 'bodyweight' },
+    { name: 'Russian Twist', muscle_group: 'core', movement_type: 'isolation', equipment: 'bodyweight' },
+    { name: 'Hanging Leg Raise', muscle_group: 'core', movement_type: 'isolation', equipment: 'bodyweight' },
+    { name: 'Cable Crunch', muscle_group: 'core', movement_type: 'isolation', equipment: 'cable' },
+    { name: 'Ab Wheel Rollout', muscle_group: 'core', movement_type: 'isolation', equipment: 'equipment' },
+    { name: 'Bicycle Crunches', muscle_group: 'core', movement_type: 'isolation', equipment: 'bodyweight' },
+    { name: 'V-ups', muscle_group: 'core', movement_type: 'isolation', equipment: 'bodyweight' },
+    { name: 'Decline Crunch', muscle_group: 'core', movement_type: 'isolation', equipment: 'bodyweight' },
+    { name: 'Dragon Flag', muscle_group: 'core', movement_type: 'isolation', equipment: 'bodyweight' },
+    { name: 'Side Plank', muscle_group: 'core', movement_type: 'hold', equipment: 'bodyweight' },
+    { name: 'Dead Bug', muscle_group: 'core', movement_type: 'isolation', equipment: 'bodyweight' },
+    { name: 'Bird Dog', muscle_group: 'core', movement_type: 'isolation', equipment: 'bodyweight' },
+    { name: 'Hollow Body Hold', muscle_group: 'core', movement_type: 'hold', equipment: 'bodyweight' },
+    { name: 'L-Sit', muscle_group: 'core', movement_type: 'hold', equipment: 'bodyweight' },
+    { name: 'Cable Woodchopper', muscle_group: 'core', movement_type: 'isolation', equipment: 'cable' }
   ];
 
-  const stmt = db.prepare(`
-    INSERT OR IGNORE INTO exercises (name, muscle_group, movement_type, equipment)
-    VALUES (?, ?, ?, ?)
-  `);
-  exercises.forEach(e => {
-    stmt.run(e.name, e.muscle_group, e.movement_type, e.equipment || null);
+  db.serialize(() => {
+    exercises.forEach(e => {
+      db.get('SELECT id FROM exercises WHERE name = ?', [e.name], (err, row) => {
+        if (!row) {
+          db.run(
+            'INSERT INTO exercises (name, muscle_group, movement_type, equipment) VALUES (?, ?, ?, ?)',
+            [e.name, e.muscle_group, e.movement_type, e.equipment || null]
+          );
+        }
+      });
+    });
   });
-  stmt.finalize();
 }
 
 // Helper to get exercises by name
