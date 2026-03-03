@@ -2282,23 +2282,25 @@
         }
 
         async function deleteWorkoutLog(id) {
-            if (!confirm('Are you sure you want to permanently delete this workout? This cannot be undone.')) return;
-            try {
-                const res = await fetch(API_URL + '/workout-logs/' + id, {
-                    method: 'DELETE',
-                    headers: authHeaders()
-                });
-                const data = await res.json();
-                if (data.success) {
-                    document.getElementById('historyDetailPane').style.display = 'none';
-                    loadHistory();
-                } else {
-                    alert(data.message || 'Failed to delete workout');
+            showCustomConfirmModal('Delete Workout', 'Are you sure you want to permanently delete this workout? This cannot be undone.', async (confirmed) => {
+                if (!confirmed) return;
+                try {
+                    const res = await fetch(API_URL + '/workout-logs/' + id, {
+                        method: 'DELETE',
+                        headers: authHeaders()
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        document.getElementById('historyDetailPane').style.display = 'none';
+                        loadHistory();
+                    } else {
+                        alert(data.message || 'Failed to delete workout');
+                    }
+                } catch (e) {
+                    console.error("Delete Workout Error:", e);
+                    alert('Request failed: ' + e.message);
                 }
-            } catch (e) {
-                console.error("Delete Workout Error:", e);
-                alert('Request failed: ' + e.message);
-            }
+            });
         }
 
         // Exercise detail modal (history + alternatives)

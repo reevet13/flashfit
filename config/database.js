@@ -141,7 +141,6 @@ const initializeDatabase = () => {
     if (err) console.error('Error creating workout_log_sets table:', err.message);
     else {
       console.log('Workout log sets table ready');
-      seedPreloadedPrograms();
     }
   });
 };
@@ -269,13 +268,26 @@ function seedExercises() {
   ];
 
   db.serialize(() => {
+    let insertedCount = 0;
+    const checkComplete = () => {
+      insertedCount++;
+      // console.log(`Exercise check: ${insertedCount}/${exercises.length}`);
+      if (insertedCount === exercises.length) {
+        console.log("All canonical exercises exist. Triggering program seeder...");
+        seedPreloadedPrograms();
+      }
+    };
+
     exercises.forEach(e => {
       db.get('SELECT id FROM exercises WHERE name = ?', [e.name], (err, row) => {
         if (!row) {
           db.run(
             'INSERT INTO exercises (name, muscle_group, movement_type, equipment) VALUES (?, ?, ?, ?)',
-            [e.name, e.muscle_group, e.movement_type, e.equipment || null]
+            [e.name, e.muscle_group, e.movement_type, e.equipment || null],
+            checkComplete
           );
+        } else {
+          checkComplete();
         }
       });
     });
@@ -289,6 +301,12 @@ function getExerciseIds(names, callback) {
     if (err) return callback(err, null);
     const map = {};
     rows.forEach(r => map[r.name] = r.id);
+    console.log("Found exercise IDs for preloaded programs:", Object.keys(map).length, "out of", names.length);
+    if (Object.keys(map).length !== names.length) {
+      const foundNames = Object.keys(map);
+      const missing = names.filter(n => !foundNames.includes(n));
+      console.error("CRITICAL: Missing exercises required for preloaded programs:", missing);
+    }
     callback(null, map);
   });
 }
@@ -296,15 +314,31 @@ function getExerciseIds(names, callback) {
 // Seed 3 preloaded programs
 function seedPreloadedPrograms() {
   db.get('SELECT COUNT(*) as c FROM workout_programs WHERE is_preloaded = 1', [], (err, row) => {
-    if (err || (row && row.c > 0)) return;
+    if (err) {
+      console.error("Error checking preloaded programs:", err);
+      return;
+    }
+    if (row && row.c > 0) {
+      console.log(`Bypassing program seed: ${row.c} preloaded programs already exist.`);
+      return;
+    }
+
+    console.log("No preloaded programs found. Proceeding to seed...");
 
     // The required exercises for all programs combined
     const requiredExercises = [
-      'Barbell Back Squat', 'Barbell Bench Press', 'Deadlift', 'Overhead Press', // Powerlifting
-      'Push-ups', 'Incline Dumbbell Press', 'Lateral Raise', 'Triceps Pushdown', // Hyper - Push
-      'Barbell Row', 'Pull-ups', 'Barbell Curl', 'Lat Pulldown', // Hyper - Pull
-      'Leg Press', 'Romanian Deadlift', 'Leg Extension', 'Calf Raise', // Hyper - Legs
-      'Dumbbell Bench Press', 'Lat Pulldown', 'Leg Press', 'Dumbbell Shoulder Press' // Gen Fit
+      // Powerlifting 5-Day
+      'Barbell Back Squat', 'Barbell Bench Press', 'Deadlift', 'Overhead Press',
+      'Leg Press', 'Leg Extension', 'Romanian Deadlift', 'Barbell Row', 'Pull-ups',
+      'Front Squat', 'Incline Barbell Bench Press', 'Triceps Pushdown',
+      'Dumbbell Shoulder Press', 'Lateral Raise', 'Face Pull',
+      'Close-Grip Bench Press', 'Cable Fly', 'Barbell Curl', 'Hammer Curl',
+
+      // Hypertrophy
+      'Push-ups', 'Incline Dumbbell Press', 'Lat Pulldown', 'Calf Raise',
+
+      // Gen Fit 5-Day
+      'Dumbbell Bench Press', 'Dumbbell Row', 'Goblet Squat', 'Walking Lunge', 'Leg Curl'
     ];
 
     getExerciseIds(requiredExercises, (err, exMap) => {
@@ -313,20 +347,51 @@ function seedPreloadedPrograms() {
       const programs = [
         {
           name: 'Powerlifting',
-          description: 'Focus on heavy compound movements. 5 sets of 5 reps.',
+          description: 'Focus on heavy compound movements. 5-day split with high-frequency squatting and benching.',
           sessions: [
             {
-              name: 'Day 1: Squat & Bench',
+              name: 'Day 1: Heavy Squat & Light Bench',
               exercises: [
-                { id: exMap['Barbell Back Squat'], sets: 5, reps: 5 },
-                { id: exMap['Barbell Bench Press'], sets: 5, reps: 5 }
+                { id: exMap['Barbell Back Squat'], sets: 5, reps: 3 },
+                { id: exMap['Barbell Bench Press'], sets: 4, reps: 5 },
+                { id: exMap['Leg Press'], sets: 3, reps: 6 },
+                { id: exMap['Leg Extension'], sets: 3, reps: 8 }
               ]
             },
             {
-              name: 'Day 2: Deadlift & Press',
+              name: 'Day 2: Heavy Deadlift & Accessories',
               exercises: [
-                { id: exMap['Deadlift'], sets: 5, reps: 5 },
-                { id: exMap['Overhead Press'], sets: 5, reps: 5 }
+                { id: exMap['Deadlift'], sets: 5, reps: 2 },
+                { id: exMap['Romanian Deadlift'], sets: 3, reps: 5 },
+                { id: exMap['Barbell Row'], sets: 4, reps: 6 },
+                { id: exMap['Pull-ups'], sets: 3, reps: 6 }
+              ]
+            },
+            {
+              name: 'Day 3: Heavy Bench & Light Squat',
+              exercises: [
+                { id: exMap['Barbell Bench Press'], sets: 5, reps: 3 },
+                { id: exMap['Front Squat'], sets: 4, reps: 4 },
+                { id: exMap['Incline Barbell Bench Press'], sets: 3, reps: 5 },
+                { id: exMap['Triceps Pushdown'], sets: 3, reps: 8 }
+              ]
+            },
+            {
+              name: 'Day 4: Overhead Press Focus',
+              exercises: [
+                { id: exMap['Overhead Press'], sets: 5, reps: 3 },
+                { id: exMap['Dumbbell Shoulder Press'], sets: 3, reps: 6 },
+                { id: exMap['Lateral Raise'], sets: 4, reps: 8 },
+                { id: exMap['Face Pull'], sets: 3, reps: 8 }
+              ]
+            },
+            {
+              name: 'Day 5: Secondary Bench & Hypertrophy',
+              exercises: [
+                { id: exMap['Close-Grip Bench Press'], sets: 3, reps: 5 },
+                { id: exMap['Cable Fly'], sets: 3, reps: 8 },
+                { id: exMap['Barbell Curl'], sets: 3, reps: 6 },
+                { id: exMap['Hammer Curl'], sets: 3, reps: 8 }
               ]
             }
           ]
@@ -366,15 +431,51 @@ function seedPreloadedPrograms() {
         },
         {
           name: 'General Fitness',
-          description: 'Simple, approachable full-body routine.',
+          description: 'A 5-day split balancing strength and hypertrophy.',
           sessions: [
             {
-              name: 'Full Body A',
+              name: 'Day 1: Upper Body Power',
               exercises: [
-                { id: exMap['Dumbbell Bench Press'], sets: 3, reps: 10 },
-                { id: exMap['Lat Pulldown'], sets: 3, reps: 10 },
-                { id: exMap['Leg Press'], sets: 3, reps: 12 },
-                { id: exMap['Dumbbell Shoulder Press'], sets: 3, reps: 10 }
+                { id: exMap['Barbell Bench Press'], sets: 4, reps: 5 },
+                { id: exMap['Barbell Row'], sets: 4, reps: 5 },
+                { id: exMap['Overhead Press'], sets: 3, reps: 8 },
+                { id: exMap['Lat Pulldown'], sets: 3, reps: 8 }
+              ]
+            },
+            {
+              name: 'Day 2: Lower Body Power',
+              exercises: [
+                { id: exMap['Barbell Back Squat'], sets: 4, reps: 5 },
+                { id: exMap['Romanian Deadlift'], sets: 3, reps: 8 },
+                { id: exMap['Leg Press'], sets: 3, reps: 10 },
+                { id: exMap['Calf Raise'], sets: 4, reps: 15 }
+              ]
+            },
+            {
+              name: 'Day 3: Core & Auxiliary',
+              exercises: [
+                { id: exMap['Pull-ups'], sets: 3, reps: 10 },
+                { id: exMap['Push-ups'], sets: 3, reps: 15 },
+                { id: exMap['Lateral Raise'], sets: 3, reps: 15 },
+                { id: exMap['Barbell Curl'], sets: 3, reps: 12 }
+              ]
+            },
+            {
+              name: 'Day 4: Upper Body Hypertrophy',
+              exercises: [
+                { id: exMap['Incline Dumbbell Press'], sets: 3, reps: 10 },
+                { id: exMap['Dumbbell Row'], sets: 3, reps: 10 },
+                { id: exMap['Dumbbell Shoulder Press'], sets: 3, reps: 12 },
+                { id: exMap['Triceps Pushdown'], sets: 3, reps: 12 }
+              ]
+            },
+            {
+              name: 'Day 5: Lower Body Hypertrophy',
+              exercises: [
+                { id: exMap['Goblet Squat'], sets: 3, reps: 12 },
+                { id: exMap['Walking Lunge'], sets: 3, reps: 10 },
+                { id: exMap['Leg Extension'], sets: 3, reps: 15 },
+                { id: exMap['Leg Curl'], sets: 3, reps: 15 }
               ]
             }
           ]
