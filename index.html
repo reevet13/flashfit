@@ -1227,6 +1227,7 @@
                     <div id="customPromptAutocomplete" class="autocomplete-dropdown"></div>
                 </div>
             </div>
+            <div id="customPromptExtra" style="margin-bottom: 1.5rem;"></div>
             <button type="button" class="btn-primary" onclick="submitCustomPrompt()"
                 style="padding: 1rem; border-radius: 12px; font-size: 1.1rem; width: 100%;">Confirm</button>
         </div>
@@ -1655,9 +1656,10 @@
         let currentPromptCallback = null;
         let currentAutocompleteData = [];
 
-        function showCustomPromptModal(title, label, defaultValue, callback, autocompleteData = []) {
+        function showCustomPromptModal(title, label, defaultValue, callback, autocompleteData = [], extraHtml = '') {
             document.getElementById('customPromptTitle').textContent = title;
             document.getElementById('customPromptLabel').textContent = label;
+            document.getElementById('customPromptExtra').innerHTML = extraHtml;
             const inputEl = document.getElementById('customPromptInput');
             inputEl.value = defaultValue || '';
             currentPromptCallback = callback;
@@ -2139,7 +2141,10 @@
                 card.innerHTML = `
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem;">
                         <strong><a href="#" onclick="openExerciseDetail(${ex.exercise_id}); return false;">${ex.exercise_name}</a></strong>
-                        <button type="button" class="btn-sm" onclick="addLogSet(${exIdx})">+ Set</button>
+                        <div style="display:flex; align-items:center; gap: 0.5rem;">
+                            <button type="button" class="btn-sm" onclick="openLogSwapExerciseModal(${exIdx}, ${ex.exercise_id})">Swap</button>
+                            <button type="button" class="btn-sm" onclick="addLogSet(${exIdx})">+ Set</button>
+                        </div>
                     </div>
                     <div class="log-sets" style="margin-top:0.5rem;">${setsHtml}</div>
                 `;
@@ -2384,9 +2389,7 @@
         // Swap exercise logic
         let swapContext = null;
 
-        async function openSwapExerciseModal(programId, sessionId, pseId, exerciseId) {
-            swapContext = { programId, sessionId, pseId };
-
+        async function promptSwapExercise(exerciseId, onSwapCallback) {
             if (exerciseListCache.length === 0) {
                 try {
                     const res = await fetch(API_URL + '/exercises');
@@ -2397,22 +2400,51 @@
                 }
             }
 
+            let extraHtml = '';
+            try {
+                const altRes = await fetch(API_URL + '/exercises/' + exerciseId + '/alternatives', { headers: authHeaders() });
+                const altData = await altRes.json();
+                if (altData.success && altData.alternatives && altData.alternatives.length > 0) {
+                    const topAlts = altData.alternatives.slice(0, 2);
+                    extraHtml = '<div style="margin-top: 1rem;"><h4 style="color: var(--accent-blue); margin-bottom: 0.5rem; font-size: 0.9rem; text-transform: uppercase;">Similar Exercises</h4><div style="display: flex; flex-direction: column; gap: 0.5rem;">';
+                    topAlts.forEach(alt => {
+                        extraHtml += `<button type="button" class="alt-item" style="text-align: left; background: rgba(59, 130, 246, 0.1); border: 1px solid var(--accent-blue); border-radius: 8px; cursor: pointer; color: var(--off-white); padding: 0.8rem;" onclick="selectAutocomplete('${alt.name.replace(/'/g, "\\'")}')"><strong>${alt.name}</strong><br><span style="font-size: 0.85rem; color: rgba(245,245,245,0.7);">${alt.equipment || 'No equipment'}</span></button>`;
+                    });
+                    extraHtml += '</div></div>';
+                }
+            } catch (e) {
+                console.error("Failed to load alternatives", e);
+            }
+
             const exerciseNames = exerciseListCache.map(e => e.name);
             showCustomPromptModal('Swap Exercise', 'Search for a replacement exercise', '', async (name) => {
                 if (name == null) {
-                    swapContext = null;
-                    return;
+                    return; // user cancelled
                 }
 
                 const ex = exerciseListCache.find(e => e.name.toLowerCase() === name.toLowerCase()) || exerciseListCache.find(e => e.name.toLowerCase().includes(name.toLowerCase()));
                 if (!ex) {
                     alert('Exercise not found in database.');
-                    swapContext = null;
                     return;
                 }
 
-                commitSwapExercise(ex.id);
-            }, exerciseNames);
+                onSwapCallback(ex);
+            }, exerciseNames, extraHtml);
+        }
+
+        async function openLogSwapExerciseModal(exIdx, exerciseId) {
+            promptSwapExercise(exerciseId, (newEx) => {
+                logExercises[exIdx].exercise_id = newEx.id;
+                logExercises[exIdx].exercise_name = newEx.name;
+                renderLogExercises();
+            });
+        }
+
+        async function openSwapExerciseModal(programId, sessionId, pseId, exerciseId) {
+            swapContext = { programId, sessionId, pseId };
+            promptSwapExercise(exerciseId, (newEx) => {
+                commitSwapExercise(newEx.id);
+            });
         }
 
         async function commitSwapExercise(newExerciseId) {
