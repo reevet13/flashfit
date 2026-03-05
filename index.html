@@ -1241,9 +1241,10 @@
             <p id="customConfirmMessage" style="color: rgba(245,245,245,0.8); margin-bottom: 2rem; font-size: 1.1rem;">
                 This action cannot be undone.</p>
             <div style="display: flex; gap: 1rem; justify-content: center;">
-                <button type="button" class="btn-sm" onclick="submitCustomConfirm(false)"
+                <button type="button" id="customConfirmCancelBtn" class="btn-sm" onclick="submitCustomConfirm(false)"
                     style="flex: 1; padding: 0.8rem; font-size: 1rem;">Cancel</button>
-                <button type="button" class="btn-sm btn-delete" onclick="submitCustomConfirm(true)"
+                <button type="button" id="customConfirmOkBtn" class="btn-sm btn-delete"
+                    onclick="submitCustomConfirm(true)"
                     style="flex: 1; padding: 0.8rem; font-size: 1rem; border-radius: 25px;">Delete</button>
             </div>
         </div>
@@ -1741,8 +1742,29 @@
         // Custom Confirm Modal logic
         let currentConfirmCallback = null;
 
-        function showCustomConfirmModal(title, message, callback) {
-            document.getElementById('customConfirmTitle').textContent = title;
+        function showCustomConfirmModal(title, message, callback, isDestructive = true) {
+            const titleEl = document.getElementById('customConfirmTitle');
+            titleEl.textContent = title;
+            const okBtn = document.getElementById('customConfirmOkBtn');
+            const cancelBtn = document.getElementById('customConfirmCancelBtn');
+
+            if (isDestructive === 'alert') {
+                titleEl.style.color = 'var(--accent-blue)';
+                okBtn.className = 'btn-sm primary';
+                okBtn.textContent = 'Ok';
+                cancelBtn.style.display = 'none';
+            } else if (!isDestructive) {
+                titleEl.style.color = 'var(--accent-blue)';
+                okBtn.className = 'btn-sm primary';
+                okBtn.textContent = 'Confirm';
+                cancelBtn.style.display = 'block';
+            } else {
+                titleEl.style.color = '#ef4444';
+                okBtn.className = 'btn-sm btn-delete';
+                okBtn.textContent = 'Delete';
+                cancelBtn.style.display = 'block';
+            }
+
             document.getElementById('customConfirmMessage').textContent = message;
             currentConfirmCallback = callback;
             document.getElementById('customConfirmModal').classList.add('active');
@@ -2187,30 +2209,35 @@
                 });
             });
             if (!hasAny) {
-                alert('Add at least one set (reps or load) before saving.');
+                showCustomConfirmModal('Error', 'Add at least one set (reps or load) before saving.', null, 'alert');
                 return;
             }
-            try {
-                const res = await fetch(API_URL + '/workout-logs', {
-                    method: 'POST',
-                    headers: authHeaders(),
-                    body: JSON.stringify({
-                        program_id: logProgramId || undefined,
-                        program_session_id: logSessionId || undefined,
-                        session_name: sessionName,
-                        workout_date: new Date().toISOString().slice(0, 10),
-                        sets: setsPayload
-                    })
-                });
-                const data = await res.json();
-                if (!data.success) { alert(data.message || 'Save failed'); return; }
-                alert('Workout saved.');
-                document.getElementById('logExercisesPane').innerHTML = '';
-                document.getElementById('logSaveArea').style.display = 'none';
-                logExercises = [];
-            } catch (e) {
-                alert('Request failed');
-            }
+
+            showCustomConfirmModal('Save Workout', 'Are you sure you want to save this workout log?', async (confirmed) => {
+                if (!confirmed) return;
+                try {
+                    const res = await fetch(API_URL + '/workout-logs', {
+                        method: 'POST',
+                        headers: authHeaders(),
+                        body: JSON.stringify({
+                            program_id: logProgramId || undefined,
+                            program_session_id: logSessionId || undefined,
+                            session_name: sessionName,
+                            workout_date: new Date().toISOString().slice(0, 10),
+                            sets: setsPayload
+                        })
+                    });
+                    const data = await res.json();
+                    if (!data.success) { showCustomConfirmModal('Error', data.message || 'Save failed', null, 'alert'); return; }
+
+                    showCustomConfirmModal('Success', 'Workout saved.', null, 'alert');
+                    document.getElementById('logExercisesPane').innerHTML = '';
+                    document.getElementById('logSaveArea').style.display = 'none';
+                    logExercises = [];
+                } catch (e) {
+                    showCustomConfirmModal('Error', 'Request failed', null, 'alert');
+                }
+            }, false);
         }
 
         // History
